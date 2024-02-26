@@ -1,3 +1,3 @@
-const getRandomNumber = () => Math.round(Math.random() * 1000);
+const getRandomNumber = () => Math.floor(Math.random() * 999) + 1;
 
 module.exports = getRandomNumber;
