@@ -7,7 +7,9 @@ const OS_TOP_CPU_PROCESS_COMMANDS = {
   POSIX: "ps -A -o %cpu,%mem,comm | sort -nr | head -n 1",
 };
 
-const MIN_REFRESH_RATE = 10; // times/sec
+const MIN_REFRESH_RATE = 10; // times per sec
+
+const LOG_FILE_INTERVAL_MS = 60 * 1000; // 1 minute
 
 const getOSTopCPUProcessCommand = () => {
   let topCPUCommand;
@@ -26,39 +28,58 @@ const getOSTopCPUProcessCommand = () => {
   return topCPUCommand;
 };
 
+// Log to file in separate Node.js process to avoid affect to main process Event Loop
+const logToFileProcess = childProcess.fork("./logToFile");
+
 const logOneRow = (result: string) => {
   console.clear();
   console.log(result);
 };
 
-const runCommandWithMinRefreshRate = (
+const runCommand = (
   command: string,
-  minRefreshRate: number
+  minRefreshRate: number,
+  logFileIntervalMs: number
 ) => {
-  const minIntervalMs = 1000 / minRefreshRate;
+  const minCommandIntervalMs = 1000 / minRefreshRate;
+  let lastLogFileTime = Date.now();
 
   (function runFunc() {
-    const startTime = Date.now();
+    const executionStartTime = Date.now();
 
     childProcess.exec(command, (error, stdout, stderr) => {
-      logOneRow(stdout);
+      const executionEndTime = Date.now();
 
-      if (error !== null) {
-        throw new Error("Could not run command.");
+      if (stdout) {
+        const result = stdout.trim();
+        // Log execution result using one row
+        logOneRow(result);
+
+        // Log to file if ~ log file interval passed
+        if (executionEndTime - lastLogFileTime > logFileIntervalMs) {
+          logToFileProcess.send(result);
+          lastLogFileTime = Date.now();
+        }
       }
 
-      const executionTime = Date.now() - startTime;
+      if (stderr) {
+        console.error("Error during command execution.", stderr);
+      }
 
-      console.log("Exec time: ", executionTime / 1000);
+      if (error !== null) {
+        console.error("Unsuccessful run command.", error);
+      }
 
-      if (executionTime > minIntervalMs) {
+      // Re-run based on min refresh rate: either rate achieved OR immediately if command execution lasts too long
+      const executionTime = executionEndTime - executionStartTime;
+      if (executionTime > minCommandIntervalMs) {
         runFunc();
       } else {
-        setTimeout(runFunc, minIntervalMs - executionTime);
+        setTimeout(runFunc, minCommandIntervalMs - executionTime);
       }
     });
   })();
 };
 
 const topCPUProcessCommand = getOSTopCPUProcessCommand();
-runCommandWithMinRefreshRate(topCPUProcessCommand, MIN_REFRESH_RATE);
+runCommand(topCPUProcessCommand, MIN_REFRESH_RATE, LOG_FILE_INTERVAL_MS);

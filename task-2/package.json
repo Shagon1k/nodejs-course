@@ -13,8 +13,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "start": "node build/index.js",
-        "start:dev": "ts-node src/index.ts"
+        "start": "cd build && node index.js",
+        "start:dev": "cd src && ts-node index.ts"
     },
     "author": "Aliaksei Hurynovich",
     "license": "ISC"
