@@ -42,7 +42,7 @@ const runCommand = (
   logFileIntervalMs: number
 ) => {
   const minCommandIntervalMs = 1000 / minRefreshRate;
-  let lastLogFileTime = Date.now();
+  let lastLogFileTime: number;
 
   (function runFunc() {
     const executionStartTime = Date.now();
@@ -56,7 +56,10 @@ const runCommand = (
         logOneRow(result);
 
         // Log to file if ~ log file interval passed
-        if (executionEndTime - lastLogFileTime > logFileIntervalMs) {
+        if (
+          !lastLogFileTime ||
+          executionEndTime - lastLogFileTime > logFileIntervalMs
+        ) {
           logToFileProcess.send(result);
           lastLogFileTime = Date.now();
         }
@@ -67,12 +70,13 @@ const runCommand = (
       }
 
       if (error !== null) {
-        console.error("Unsuccessful run command.", error);
+        console.error("Unsuccessful run command.");
+        throw error;
       }
 
       // Re-run based on min refresh rate: either rate achieved OR immediately if command execution lasts too long
       const executionTime = executionEndTime - executionStartTime;
-      if (executionTime > minCommandIntervalMs) {
+      if (executionTime >= minCommandIntervalMs) {
         runFunc();
       } else {
         setTimeout(runFunc, minCommandIntervalMs - executionTime);

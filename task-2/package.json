@@ -3,9 +3,6 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "dependencies": {
-        "undici-types": "^5.26.5"
-    },
     "devDependencies": {
         "@types/node": "^20.11.24",
         "ts-node": "^10.9.2",
