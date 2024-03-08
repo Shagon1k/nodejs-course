@@ -1,16 +1,17 @@
 {
-    "name": "task-2",
+    "name": "task-3",
     "version": "1.0.0",
     "description": "",
     "devDependencies": {
         "@types/node": "^20.11.24",
+        "nodemon": "^3.1.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.3.3"
     },
     "scripts": {
         "build": "tsc",
-        "start": "cd build && node index.js",
-        "start:dev": "cd src && ts-node index.ts"
+        "task1": "node ./build/event-emitter/__tests__/eventEmitter.test.js",
+        "task1:dev": "nodemon ./src/event-emitter/__tests__/eventEmitter.test.ts"
     },
     "author": "Aliaksei Hurynovich",
     "license": "ISC"
