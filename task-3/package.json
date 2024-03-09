@@ -11,7 +11,9 @@
     "scripts": {
         "build": "tsc",
         "task1": "node ./build/event-emitter/__tests__/eventEmitter.test.js",
-        "task1:dev": "nodemon ./src/event-emitter/__tests__/eventEmitter.test.ts"
+        "task1:dev": "nodemon ./src/event-emitter/__tests__/eventEmitter.test.ts",
+        "task2": "node ./build/with-time/__tests__/withTime.test.js",
+        "task2:dev": "nodemon ./src/with-time/__tests__/withTime.test.ts"
     },
     "author": "Aliaksei Hurynovich",
     "license": "ISC"
