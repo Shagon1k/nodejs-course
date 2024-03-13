@@ -4,7 +4,21 @@ module.exports = {
   roots: ["./src"],
   silent: false,
   verbose: true,
-  testMatch: ["**/__tests__/**/?(*.)+(spec|test).[tj]s"],
+  projects: [
+    {
+      displayName: "unit-integration",
+      preset: "ts-jest",
+      testMatch: [
+        "**/__tests__/**/*.unit.(spec|test).ts",
+        "**/__tests__/**/*.integration.(spec|test).ts",
+      ],
+    },
+    {
+      displayName: "e2e",
+      preset: "ts-jest",
+      testMatch: ["**/__tests__/**/*.e2e.(spec|test).ts"],
+    },
+  ],
   collectCoverageFrom: ["src/**"],
   coverageReporters: ["text"],
   coverageDirectory: "./test-coverage",
