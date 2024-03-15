@@ -12,17 +12,18 @@ module.exports = {
         "**/__tests__/**/*.unit.(spec|test).ts",
         "**/__tests__/**/*.integration.(spec|test).ts",
       ],
+      coveragePathIgnorePatterns: ["/node_modules/", "/__tests__/"],
     },
     {
       displayName: "e2e",
       preset: "ts-jest",
       testMatch: ["**/__tests__/**/*.e2e.(spec|test).ts"],
+      coveragePathIgnorePatterns: ["/node_modules/", "/__tests__/"],
     },
   ],
   collectCoverageFrom: ["src/**"],
   coverageReporters: ["text"],
   coverageDirectory: "./test-coverage",
-  coveragePathIgnorePatterns: ["/node_modules/"],
   coverageThreshold: {
     global: {
       lines: 85,
