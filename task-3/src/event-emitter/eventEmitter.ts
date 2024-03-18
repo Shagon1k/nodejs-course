@@ -8,7 +8,7 @@ class EventEmitter {
   listeners: IListeners = {};
 
   addListener(eventName: IEventName, fn: IEventFunction): EventEmitter {
-    let eventListeners = this.listeners[eventName];
+    const eventListeners = this.listeners[eventName];
 
     if (eventListeners) {
       eventListeners.push(fn);
@@ -24,7 +24,7 @@ class EventEmitter {
   }
 
   removeListener(eventName: IEventName, fn: IEventFunction): EventEmitter {
-    let eventListeners = this.listeners[eventName];
+    const eventListeners = this.listeners[eventName];
 
     if (eventListeners) {
       this.listeners[eventName] = eventListeners.filter((l) => l !== fn);
@@ -54,7 +54,7 @@ class EventEmitter {
   }
 
   listenerCount(eventName: IEventName, listener?: IEventFunction) {
-    let eventListeners = this.listeners[eventName];
+    const eventListeners = this.listeners[eventName];
 
     if (!eventListeners) {
       return 0;

@@ -5,12 +5,18 @@ class WithTime extends EventEmitter {
     const startTime = Date.now();
     this.emit("begin");
 
-    asyncFunc(...args).then((data) => {
-      const endTime = Date.now();
-      this.emit("data", data);
-      this.emit("end", endTime - startTime);
-    });
-
+    asyncFunc(...args)
+      .then((data) => {
+        this.emit("data", data);
+      })
+      .catch((error) => {
+        console.error("error!!!", error);
+        this.emit("error", error);
+      })
+      .finally(() => {
+        const endTime = Date.now();
+        this.emit("end", endTime - startTime);
+      });
   }
 }
 
