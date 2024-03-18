@@ -1,24 +1,19 @@
-import { users_db } from "../db-mock/db";
+import * as UserService from "../services/user.service";
 import { STATUS_CODES } from "../constants";
-import {
-  LINKS_PATTERNS_MAP,
-  LINKS_USER_ID_TEMPLATE,
-  CACHE_MAX_AGE,
-} from "../config";
-import omitFields from "./helpers/omitFields";
+import { CACHE_MAX_AGE } from "../config";
 import generateResponse from "./helpers/generateResponse";
+import { generateUserLink, generateHobbiesLink } from "./helpers/generateLinks";
 
 import { IApiHandler } from "../types";
 
 const getUsers: IApiHandler = (_, res) => {
-  const responseData = users_db.map((user) => ({
-    user: omitFields(user, ["hobbies"]),
+  const users = UserService.findAllUsers();
+
+  const responseData = users.map((user) => ({
+    user,
     links: {
-      self: LINKS_PATTERNS_MAP.USER.replace(LINKS_USER_ID_TEMPLATE, user.id),
-      hobbies: LINKS_PATTERNS_MAP.HOBBIES.replace(
-        LINKS_USER_ID_TEMPLATE,
-        user.id
-      ),
+      self: generateUserLink(user.id),
+      hobbies: generateHobbiesLink(user.id),
     },
   }));
   res.statusCode = STATUS_CODES.OK;

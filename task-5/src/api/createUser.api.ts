@@ -1,21 +1,12 @@
-import { randomUUID } from "crypto";
-import { users_db } from "../db-mock/db";
+import * as UserService from "../services/user.service";
 import { STATUS_CODES } from "../constants";
-import { LINKS_PATTERNS_MAP, LINKS_USER_ID_TEMPLATE } from "../config";
-import omitFields from "./helpers/omitFields";
 import generateResponse from "./helpers/generateResponse";
+import { generateUserLink, generateHobbiesLink } from "./helpers/generateLinks";
 
-import { IApiHandler, IUser, IUserDataRequest } from "../types";
+import { IApiHandler, IUserDataRequest } from "../types";
 
 const isUserDataRequest = (userData: any): userData is IUserDataRequest =>
   typeof userData?.name === "string" && typeof userData?.email === "string";
-
-const createNewUser = (userDataRequest: IUserDataRequest): IUser => ({
-  id: randomUUID(),
-  hobbies: [],
-  name: userDataRequest.name,
-  email: userDataRequest.email,
-});
 
 const createUser: IApiHandler = (req, res) => {
   let requestBody = "";
@@ -29,20 +20,13 @@ const createUser: IApiHandler = (req, res) => {
     const isValid = isUserDataRequest(requestData);
 
     if (isValid) {
-      const newUser = createNewUser(requestData);
-      users_db.push(newUser);
+      const newUser = UserService.createUser(requestData);
 
       const responseData = {
-        user: omitFields(newUser, ["hobbies"]),
+        user: newUser,
         links: {
-          self: LINKS_PATTERNS_MAP.USER.replace(
-            LINKS_USER_ID_TEMPLATE,
-            newUser.id
-          ),
-          hobbies: LINKS_PATTERNS_MAP.HOBBIES.replace(
-            LINKS_USER_ID_TEMPLATE,
-            newUser.id
-          ),
+          self: generateUserLink(newUser.id),
+          hobbies: generateHobbiesLink(newUser.id),
         },
       };
       res.statusCode = STATUS_CODES.CREATED;

@@ -1,9 +1,8 @@
-import { users_db } from "../db-mock/db";
+import * as UserService from "../services/user.service";
 import { ROUTES_REGEXP_MAP } from "../config";
 import { STATUS_CODES } from "../constants";
-import { LINKS_PATTERNS_MAP, LINKS_USER_ID_TEMPLATE } from "../config";
-import omitFields from "./helpers/omitFields";
 import generateResponse from "./helpers/generateResponse";
+import { generateUserLink, generateHobbiesLink } from "./helpers/generateLinks";
 
 import { IApiHandler, IHobbiesDataRequest } from "../types";
 
@@ -13,10 +12,10 @@ const isHobbiesDataRequest = (
   Array.isArray(hobbiesData) && hobbiesData.every((i) => typeof i === "string");
 
 const updateUserHobbies: IApiHandler = (req, res) => {
-  const userId = req?.url?.match(ROUTES_REGEXP_MAP.HOBBIES)?.[1];
-  const userDbIndex = users_db.findIndex(({ id }) => id === userId);
+  const requestUserId = req?.url?.match(ROUTES_REGEXP_MAP.HOBBIES)?.[1];
+  const dbUser = UserService.findUser(requestUserId);
 
-  if (userDbIndex !== -1) {
+  if (dbUser) {
     let requestBody = "";
 
     req.on("data", (chunk) => {
@@ -29,24 +28,14 @@ const updateUserHobbies: IApiHandler = (req, res) => {
       const isValid = isHobbiesDataRequest(newHobbies);
 
       if (isValid) {
-        let updatedHobbiesSet = new Set([
-          ...users_db[userDbIndex].hobbies,
-          ...newHobbies,
-        ]);
-        users_db[userDbIndex].hobbies = [...updatedHobbiesSet];
-        const updatedUser = users_db[userDbIndex];
+        UserService.updateUserHobbies(requestUserId!, newHobbies);
+        const updatedUser = UserService.findUser(requestUserId)!;
 
         const responseData = {
-          user: omitFields(updatedUser, ["hobbies"]),
+          user: updatedUser,
           links: {
-            self: LINKS_PATTERNS_MAP.USER.replace(
-              LINKS_USER_ID_TEMPLATE,
-              updatedUser.id
-            ),
-            hobbies: LINKS_PATTERNS_MAP.HOBBIES.replace(
-              LINKS_USER_ID_TEMPLATE,
-              updatedUser.id
-            ),
+            self: generateUserLink(updatedUser.id),
+            hobbies: generateHobbiesLink(updatedUser.id),
           },
         };
         res.statusCode = STATUS_CODES.OK;
@@ -67,7 +56,10 @@ const updateUserHobbies: IApiHandler = (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.end(
       JSON.stringify(
-        generateResponse(undefined, `User with id ${userId} doesn't exist`)
+        generateResponse(
+          undefined,
+          `User with id ${requestUserId} doesn't exist`
+        )
       )
     );
   }

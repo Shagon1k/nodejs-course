@@ -11,7 +11,9 @@ export interface IUserDataRequest {
   email: string;
 }
 
-export interface IUser extends IUserDataRequest {
+export interface IUser {
   id: string;
+  name: string;
+  email: string;
   hobbies: string[];
 }

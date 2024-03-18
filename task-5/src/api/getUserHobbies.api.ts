@@ -1,27 +1,21 @@
-import { users_db } from "../db-mock/db";
+import * as UserService from "../services/user.service";
 import { ROUTES_REGEXP_MAP, CACHE_MAX_AGE } from "../config";
 import { STATUS_CODES } from "../constants";
-import { LINKS_PATTERNS_MAP, LINKS_USER_ID_TEMPLATE } from "../config";
 import generateResponse from "./helpers/generateResponse";
+import { generateUserLink, generateHobbiesLink } from "./helpers/generateLinks";
 
 import { IApiHandler } from "../types";
 
 const getUserHobbies: IApiHandler = (req, res) => {
-  const userId = req?.url?.match(ROUTES_REGEXP_MAP.HOBBIES)?.[1];
-  const userDbIndex = users_db.findIndex(({ id }) => id === userId);
+  const requestUserId = req?.url?.match(ROUTES_REGEXP_MAP.HOBBIES)?.[1];
+  const userHobbies = UserService.getUserHobbies(requestUserId);
 
-  if (userDbIndex !== -1) {
+  if (userHobbies !== null) {
     const responseData = {
-      hobbies: [...users_db[userDbIndex].hobbies],
+      hobbies: userHobbies,
       links: {
-        self: LINKS_PATTERNS_MAP.HOBBIES.replace(
-          LINKS_USER_ID_TEMPLATE,
-          userId as string
-        ),
-        user: LINKS_PATTERNS_MAP.USER.replace(
-          LINKS_USER_ID_TEMPLATE,
-          userId as string
-        ),
+        self: generateHobbiesLink(requestUserId!),
+        user: generateUserLink(requestUserId!),
       },
     };
     res.statusCode = STATUS_CODES.OK;
@@ -33,7 +27,10 @@ const getUserHobbies: IApiHandler = (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.end(
       JSON.stringify(
-        generateResponse(undefined, `User with id ${userId} doesn't exist`)
+        generateResponse(
+          undefined,
+          `User with id ${requestUserId} doesn't exist`
+        )
       )
     );
   }
