@@ -1,2 +1,2 @@
-export { default as cartsController } from "./carts.controller";
+export { default as cartController } from "./cart.controller";
 export { default as productsController } from "./products.controller";

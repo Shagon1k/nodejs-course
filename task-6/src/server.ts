@@ -1,5 +1,5 @@
 import express from "express";
-import { cartsController, productsController } from "./controllers";
+import apiRouter from "./api";
 
 const PORT = 8000;
 
@@ -8,8 +8,7 @@ export const runServer = () => {
 
   app.use(express.json());
 
-  app.use("/api/profile/cart", cartsController);
-  app.use("/api/products", productsController);
+  app.use("/api", apiRouter);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
