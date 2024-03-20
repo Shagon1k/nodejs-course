@@ -21,12 +21,12 @@ const products_db: IProductEntity[] = [
   },
 ];
 
-export const getProductById = (productId: string) => {
+export const findProductById = (productId: string) => {
   const product = products_db.find(({ id }) => id === productId) || null;
 
   return structuredClone(product);
 };
 
-export const getAllProducts = () => {
+export const findAllProducts = () => {
   return [...products_db];
 };

@@ -15,36 +15,55 @@ export interface ICartEntity {
 
 const carts_db: ICartEntity[] = [];
 
-export const createCart = (
-  userId: string,
-  product: IProductEntity,
-  count: number
-) => {
+export const findCartByUserId = (findUserId: string) => {
+  const cart = carts_db.find(({ userId }) => userId === findUserId) || null;
+
+  return structuredClone(cart);
+};
+
+export const deleteCartByUserId = (deleteUserId: string) => {
+  const deleteCartId = findCartByUserId(deleteUserId)?.id;
+
+  if (deleteCartId) {
+    carts_db.filter(({ id }) => id !== deleteCartId);
+  }
+};
+
+export const createCart = (userId: string) => {
   const newCart: ICartEntity = {
     id: randomUUID(),
     userId: userId,
     isDeleted: false,
-    items: [{ product, count }],
+    items: [],
   };
 
   carts_db.push(newCart);
-
-  return structuredClone(newCart);
 };
 
-export const updateCart = (
-  userId: string,
-  product: IProductEntity,
-  count: number
+export const updateCartItem = (
+  cartId: string,
+  item: IProductEntity,
+  count: number = 1
 ) => {
-  const updateUserId = userId;
-  const updateProductId = product.id;
+  const cart = carts_db.find(({ id }) => id === cartId);
 
-  const userCart = carts_db.find(({ userId }) => userId === updateUserId);
+  if (!cart) {
+    return;
+  }
 
-  if (!userCart) {
-    const newCart = createCart(userId, product, count);
+  const cartItemIndex = cart.items.findIndex(
+    ({ product: { id } }) => id === item.id
+  );
 
-    return newCart;
+  if (cartItemIndex === -1) {
+    cart.items.push({ product: item, count });
+  } else {
+    if (count === 0) {
+      // Drop (remove) item if new count equals 0
+      cart.items.splice(cartItemIndex, 1);
+    } else {
+      // Update item's count if it > 0
+      cart.items[cartItemIndex].count = count;
+    }
   }
 };
