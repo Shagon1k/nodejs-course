@@ -7,8 +7,7 @@ import {
 import { userService } from "../services";
 import APIError from "../helpers/apiError";
 import { STATUS_CODES } from "../../constants";
-
-const AUTH_TOKEN_HEADER = "x-user-id";
+import { AUTH_TOKEN_HEADER } from "../config";
 
 const authMiddleware = (req: IRequest, _: IResponse, next: INext) => {
   const authToken = req.headers[AUTH_TOKEN_HEADER];

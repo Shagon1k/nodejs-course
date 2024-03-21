@@ -1,9 +1,18 @@
-import { cartRepository, productsRepository } from "../repositories";
+import {
+  cartRepository,
+  productRepository,
+  orderRepository,
+} from "../repositories";
+import omitFields from "../helpers/omitFields";
 
 export const enum CART_ERRORS {
   NO_PRODUCT,
   NO_CART,
+  CART_IS_EMPTY,
 }
+
+const calculateTotal = (items: cartRepository.ICartItemEntity[]) =>
+  items.reduce((acc, { product: { price }, count }) => acc + price * count, 0);
 
 export const getCartByUserId = (userId: string) => {
   let cart = cartRepository.findCartByUserId(userId);
@@ -14,12 +23,9 @@ export const getCartByUserId = (userId: string) => {
     cart = cartRepository.findCartByUserId(userId)!;
   }
 
-  const total = cart.items.reduce(
-    (acc, { product: { price } }) => acc + price,
-    0
-  );
+  const total = calculateTotal(cart.items);
 
-  return { cart, total };
+  return { cart: omitFields(cart, ["isDeleted"]), total };
 };
 
 export const updateCart = (
@@ -27,7 +33,7 @@ export const updateCart = (
   productId: string,
   count: number
 ) => {
-  const product = productsRepository.findProductById(productId);
+  const product = productRepository.findProductById(productId);
   // No such product
   if (!product) {
     return CART_ERRORS.NO_PRODUCT;
@@ -43,14 +49,26 @@ export const updateCart = (
   cartRepository.updateCartItem(cart.id, product, count);
 
   const updatedCart = cartRepository.findCartByUserId(userId)!;
+  const total = calculateTotal(updatedCart.items);
   // Return updated cart
-  return updatedCart;
+  return { cart: omitFields(updatedCart, ["isDeleted"]), total };
 };
 
-export const deleteCartByUserId = (userId: string) => {
-  cartRepository.deleteCartByUserId(userId);
+export const emptyCartByUserId = (userId: string) => {
+  cartRepository.emptyCartByUserId(userId);
 };
 
-// cartRepository.createCart(userId, product, count);
-// const newCart = cartRepository.findCartByUserId(userId);
-// return newCart;
+export const checkout = (userId: string) => {
+  const cart = cartRepository.findCartByUserId(userId);
+
+  if (!cart || cart.items.length === 0) {
+    return CART_ERRORS.CART_IS_EMPTY;
+  }
+
+  orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
+  cartRepository.deleteCartById(cart.id);
+
+  const createdOrder = orderRepository.findOrderByCartId(cart.id)!;
+
+  return createdOrder;
+};

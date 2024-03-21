@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { IProductEntity } from "./products.repository";
+import { IProductEntity } from "./product.repository";
 
 export interface ICartItemEntity {
   product: IProductEntity;
@@ -21,11 +21,19 @@ export const findCartByUserId = (findUserId: string) => {
   return structuredClone(cart);
 };
 
-export const deleteCartByUserId = (deleteUserId: string) => {
-  const deleteCartId = findCartByUserId(deleteUserId)?.id;
+export const emptyCartByUserId = (emptyUserId: string) => {
+  const cart = carts_db.find(({ userId }) => userId === emptyUserId);
 
-  if (deleteCartId) {
-    carts_db.filter(({ id }) => id !== deleteCartId);
+  if (cart) {
+    cart.items = [];
+  }
+};
+
+export const deleteCartById = (cartId: string) => {
+  const cartIndex = carts_db.findIndex(({ id }) => id === cartId);
+
+  if (cartIndex !== -1) {
+    carts_db.splice(cartIndex, 1);
   }
 };
 
