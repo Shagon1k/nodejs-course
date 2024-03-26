@@ -63,7 +63,7 @@ export const updateCartItem = (
     ({ product: { id } }) => id === item.id
   );
 
-  if (cartItemIndex === -1) {
+  if (cartItemIndex === -1 && count > 0) {
     cart.items.push({ product: item, count });
   } else {
     if (count === 0) {
