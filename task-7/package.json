@@ -13,7 +13,9 @@
         "build": "tsc",
         "start": "pm2 start build/index.js --name task-5-app",
         "stop": "pm2 stop task-5-app",
-        "start:dev": "cd src && ts-node index.ts"
+        "start:dev": "cd src && ts-node index.ts",
+        "db:start:local": "podman compose up -d",
+        "db:stop:local": "podman stop shop-db"
     },
     "author": "Aliaksei Hurynovich",
     "license": "ISC",
