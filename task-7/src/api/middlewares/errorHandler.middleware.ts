@@ -8,7 +8,7 @@ import APIError from "../helpers/apiError";
 import generateResponse from "../helpers/generateResponse";
 import { STATUS_CODES } from "../../constants";
 
-const errorHandlerMiddleware = (
+const errorHandlerMiddleware = async (
   error: Error | APIError,
   _: IRequest,
   res: IResponse,
