@@ -6,7 +6,8 @@ dotenv.config({ path: "../.env" });
 
 const startApp = async () => {
   await initDatabase();
-  // runServer();
+
+  runServer();
 };
 
 startApp();

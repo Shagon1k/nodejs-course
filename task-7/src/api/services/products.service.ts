@@ -1,13 +1,13 @@
 import { productRepository } from "../repositories";
 
-export const getAllProducts = () => {
-  const products = productRepository.findAllProducts();
+export const getAllProducts = async () => {
+  const products = await productRepository.findAllProducts();
 
   return products;
 };
 
-export const getProductById = (productId: string) => {
-  const product = productRepository.findProductById(productId);
+export const getProductById = async (productId: string) => {
+  const product = await productRepository.findProductById(productId);
 
   return product;
 };

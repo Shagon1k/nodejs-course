@@ -1,16 +1,32 @@
 import express from "express";
+import mongoose from "mongoose";
 import apiRouter from "./api";
 
 const PORT = 8000;
 
-export const runServer = () => {
-  const app = express();
+export const runServer = async () => {
+  try {
+    const { DB_USER_USERNAME, DB_USER_PASSWORD, DB_NAME } = process.env;
 
-  app.use(express.json());
+    console.log("SERVER INIT: Connecting to Database");
+    await mongoose.connect(
+      `mongodb://${DB_USER_USERNAME}:${DB_USER_PASSWORD}@localhost:27017/${DB_NAME}`
+    );
+    process.on("SIGINT", async () => {
+      await mongoose.disconnect();
+      console.log("SERVER STOP: Disconnected from MongoDB");
+      process.exit(0);
+    });
 
-  app.use("/api", apiRouter);
-
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+    console.log("SERVER INIT: Starting server");
+    const app = express();
+    app.use(express.json());
+    app.use("/api", apiRouter);
+    app.listen(PORT, () => {
+      console.log(`SERVER INIT: Server is running on port ${PORT}`);
+    });
+  } catch (e) {
+    console.error("SERVER INIT: Error starting server:", e);
+    process.exit(1);
+  }
 };

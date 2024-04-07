@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { IProductEntity } from "./product.repository";
+import { IProductEntity } from "./models/product.model";
 
 export interface ICartItemEntity {
   product: IProductEntity;

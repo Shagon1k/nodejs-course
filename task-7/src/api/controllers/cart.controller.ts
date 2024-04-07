@@ -15,7 +15,7 @@ cartController.get("/", (req, res) => {
   res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
 });
 
-cartController.put("/", (req, res) => {
+cartController.put("/", async (req, res) => {
   const reqUserId = req.headers[AUTH_TOKEN_HEADER] as string;
   const requestBody = req.body;
   const validatedRequest = updateCartSchema.validate({
@@ -32,7 +32,11 @@ cartController.put("/", (req, res) => {
   }
 
   const { userId, productId, count } = validatedRequest.value;
-  const updateCartResult = cartService.updateCart(userId, productId, count);
+  const updateCartResult = await cartService.updateCart(
+    userId,
+    productId,
+    count
+  );
 
   // No product with such ID
   if (updateCartResult === cartService.CART_ERRORS.NO_PRODUCT) {

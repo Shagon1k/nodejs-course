@@ -17,16 +17,16 @@ export const initDatabase = async () => {
         "DB INIT: Database already has been init with default Products."
       );
     } else {
-      console.log("DB INIT: Inserting default products to Database.");
+      console.log("DB INIT: Inserting default products to Database");
       await ProductModel.create([
         {
-          id: "b073d31b-6cd1-4dd3-8a73-d1b48c6cbd81",
+          _id: "b073d31b-6cd1-4dd3-8a73-d1b48c6cbd81",
           title: "Don Quixote",
           description: "Don Quixote by Miguel de Cervantes",
           price: 29.99,
         },
         {
-          id: "28364493-2462-43c3-9f64-7af5175f978a",
+          _id: "28364493-2462-43c3-9f64-7af5175f978a",
           title: "Moby Dick",
           description: "Moby Dick by Herman Melville",
           price: 31.99,
@@ -39,6 +39,6 @@ export const initDatabase = async () => {
     console.error("DB INIT: Error initializing database", e);
   } finally {
     await mongoose.disconnect();
-    console.log("DB INIT: Disconnected from MongoDB.");
+    console.log("DB INIT: Disconnected from MongoDB");
   }
 };
