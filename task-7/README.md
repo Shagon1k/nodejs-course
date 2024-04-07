@@ -24,3 +24,25 @@ In this task you will need to modify the application you created in Express and 
 3. Data Access Layer is rewritten to query MongoDB.
    - Models are created based on entity [schemas](https://git.epam.com/ld-global-coordinators/js-programs/nodejs-gmp-coursebook/-/tree/master/public-for-mentees/6-express-layered-architecture/schemas) used in Express and Layered Architecture module.
    - Models have proper relations between each other based on information specified above.
+
+# Notes
+
+## Application Pre-setup
+
+1. Create `.env` file with variables:
+   - `DB_ROOT_USERNAME`: MongoDB root username;
+   - `DB_ROOT_PASSWORD` MongoDB root password;
+   - `DB_USER_USERNAME`: MongoDB user username;
+   - `DB_USER_PASSWORD`: MongoDB user password;
+   - `DB_NAME`: name of working Database;
+2. To setup your MongoDB use `npm run db:start:local`.
+   - Don't forget to setup `DB_ROOT_USERNAME`, `DB_ROOT_PASSWORD` environment variables in `.env`.
+3. Application works with `User`'s credentials to manipulate with `{DB_NAME}` MongoDB database. So:
+   - Don't forget to setup `DB_USER_USERNAME`, `DB_USER_PASSWORD`, `DB_NAME` environment variables in `.env`;
+   - After running MongoDB container (see 2), create your `User` running:
+     - In terminal: `podman exec -it shop-db mongosh -u {DB_ROOT_USERNAME} -p {DB_ROOT_PASSWORD}`;
+     - In opened MongoDB shell:
+     ```
+     use {DB_NAME}
+     db.createUser({user: "{DB_USER_USERNAME}", pwd: "{DB_USER_PASSWORD}", roles: [{ role: "readWrite", db: "{DB_NAME}"}]})
+     ```
