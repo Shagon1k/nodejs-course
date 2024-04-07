@@ -1,59 +1,38 @@
 import { randomUUID } from "crypto";
+import CartModel from "./models/cart.model";
 import { IProductEntity } from "./models/product.model";
 
-export interface ICartItemEntity {
-  product: IProductEntity;
-  count: number;
-}
+export const findCartByUserId = async (findUserId: string) => {
+  const cart = await CartModel.findOne({ userId: findUserId }).select("-__v");
 
-export interface ICartEntity {
-  id: string;
-  userId: string;
-  isDeleted: boolean;
-  items: ICartItemEntity[];
-}
-
-const carts_db: ICartEntity[] = [];
-
-export const findCartByUserId = (findUserId: string) => {
-  const cart = carts_db.find(({ userId }) => userId === findUserId) || null;
-
-  return structuredClone(cart);
+  return cart || null;
 };
 
-export const emptyCartByUserId = (emptyUserId: string) => {
-  const cart = carts_db.find(({ userId }) => userId === emptyUserId);
-
-  if (cart) {
-    cart.items = [];
-  }
+export const emptyCartByUserId = async (emptyUserId: string) => {
+  await CartModel.updateOne({ userId: emptyUserId }, { items: [] });
 };
 
-export const deleteCartById = (cartId: string) => {
-  const cartIndex = carts_db.findIndex(({ id }) => id === cartId);
-
-  if (cartIndex !== -1) {
-    carts_db.splice(cartIndex, 1);
-  }
+export const deleteCartById = async (cartId: string) => {
+  await CartModel.deleteOne({ _id: cartId });
 };
 
-export const createCart = (userId: string) => {
-  const newCart: ICartEntity = {
-    id: randomUUID(),
+export const createCart = async (userId: string) => {
+  const newCart = {
+    _id: randomUUID(),
     userId: userId,
     isDeleted: false,
     items: [],
   };
 
-  carts_db.push(newCart);
+  await CartModel.create(newCart);
 };
 
-export const updateCartItem = (
+export const updateCartItem = async (
   cartId: string,
   item: IProductEntity,
   count: number = 1
 ) => {
-  const cart = carts_db.find(({ id }) => id === cartId);
+  const cart = await CartModel.findOne({ _id: cartId });
 
   if (!cart) {
     return;
@@ -64,6 +43,7 @@ export const updateCartItem = (
   );
 
   if (cartItemIndex === -1 && count > 0) {
+    // Add new item if not exist
     cart.items.push({ product: item, count });
   } else {
     if (count === 0) {
@@ -74,4 +54,6 @@ export const updateCartItem = (
       cart.items[cartItemIndex].count = count;
     }
   }
+  // Update Cart in Database
+  await cart.save();
 };

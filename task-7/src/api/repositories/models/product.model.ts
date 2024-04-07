@@ -7,7 +7,7 @@ export interface IProductEntity extends Document {
   price: number;
 }
 
-const ProductSchema: Schema = new Schema({
+export const ProductSchema: Schema = new Schema({
   _id: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },

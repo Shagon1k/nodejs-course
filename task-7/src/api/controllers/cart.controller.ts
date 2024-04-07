@@ -8,10 +8,10 @@ import { cartService } from "../services";
 
 const cartController = Router();
 
-cartController.get("/", (req, res, next) => {
+cartController.get("/", async (req, res, next) => {
   try {
     const userId = req.headers[AUTH_TOKEN_HEADER] as string;
-    const { cart, total } = cartService.getCartByUserId(userId);
+    const { cart, total } = await cartService.getCartByUserId(userId);
 
     res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
   } catch (e) {
@@ -60,11 +60,11 @@ cartController.put("/", async (req, res, next) => {
   }
 });
 
-cartController.delete("/", (req, res, next) => {
+cartController.delete("/", async (req, res, next) => {
   try {
     const userId = req.headers[AUTH_TOKEN_HEADER] as string;
 
-    cartService.emptyCartByUserId(userId);
+    await cartService.emptyCartByUserId(userId);
 
     res.status(STATUS_CODES.OK).send(generateResponse({ success: true }));
   } catch (e) {
@@ -72,11 +72,11 @@ cartController.delete("/", (req, res, next) => {
   }
 });
 
-cartController.post("/checkout", (req, res, next) => {
+cartController.post("/checkout", async (req, res, next) => {
   try {
     const userId = req.headers[AUTH_TOKEN_HEADER] as string;
 
-    const checkoutResult = cartService.checkout(userId);
+    const checkoutResult = await cartService.checkout(userId);
 
     if (checkoutResult === cartService.CART_ERRORS.CART_IS_EMPTY) {
       throw new APIError("Cart is empty", STATUS_CODES.BAD_REQUEST);

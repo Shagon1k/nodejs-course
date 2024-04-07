@@ -3,6 +3,7 @@ import {
   productRepository,
   orderRepository,
 } from "../repositories";
+import { ICartItemEntity } from "../repositories/models/cart.model";
 import omitFields from "../helpers/omitFields";
 
 export const enum CART_ERRORS {
@@ -11,21 +12,21 @@ export const enum CART_ERRORS {
   CART_IS_EMPTY,
 }
 
-const calculateTotal = (items: cartRepository.ICartItemEntity[]) =>
+const calculateTotal = (items: ICartItemEntity[]) =>
   items.reduce((acc, { product: { price }, count }) => acc + price * count, 0);
 
-export const getCartByUserId = (userId: string) => {
-  let cart = cartRepository.findCartByUserId(userId);
+export const getCartByUserId = async (userId: string) => {
+  let cart = await cartRepository.findCartByUserId(userId);
 
   // Cart does not exist -> create one
   if (!cart) {
-    cartRepository.createCart(userId);
-    cart = cartRepository.findCartByUserId(userId)!;
+    await cartRepository.createCart(userId);
+    cart = (await cartRepository.findCartByUserId(userId))!;
   }
 
   const total = calculateTotal(cart.items);
 
-  return { cart: omitFields(cart, ["isDeleted"]), total };
+  return { cart: omitFields(cart.toObject(), ["isDeleted"]), total };
 };
 
 export const updateCart = async (
@@ -39,36 +40,36 @@ export const updateCart = async (
     return CART_ERRORS.NO_PRODUCT;
   }
 
-  const cart = cartRepository.findCartByUserId(userId);
+  const cart = await cartRepository.findCartByUserId(userId);
   // No cart exist
   if (!cart) {
     return CART_ERRORS.NO_CART;
   }
 
   // Add item to cart or update it's count
-  cartRepository.updateCartItem(cart.id, product, count);
+  await cartRepository.updateCartItem(cart.id, product, count);
 
-  const updatedCart = cartRepository.findCartByUserId(userId)!;
+  const updatedCart = (await cartRepository.findCartByUserId(userId))!;
   const total = calculateTotal(updatedCart.items);
   // Return updated cart
-  return { cart: omitFields(updatedCart, ["isDeleted"]), total };
+  return { cart: omitFields(updatedCart.toObject(), ["isDeleted"]), total };
 };
 
-export const emptyCartByUserId = (userId: string) => {
-  cartRepository.emptyCartByUserId(userId);
+export const emptyCartByUserId = async (userId: string) => {
+  await cartRepository.emptyCartByUserId(userId);
 };
 
-export const checkout = (userId: string) => {
-  const cart = cartRepository.findCartByUserId(userId);
+export const checkout = async (userId: string) => {
+  const cart = await cartRepository.findCartByUserId(userId);
 
   if (!cart || cart.items.length === 0) {
     return CART_ERRORS.CART_IS_EMPTY;
   }
 
   orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
-  cartRepository.deleteCartById(cart.id);
+  await cartRepository.deleteCartById(cart._id);
 
-  const createdOrder = orderRepository.findOrderByCartId(cart.id)!;
+  const createdOrder = orderRepository.findOrderByCartId(cart._id)!;
 
   return createdOrder;
 };

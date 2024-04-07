@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { ICartEntity, ICartItemEntity } from "./cart.repository";
+import { ICartEntity, ICartItemEntity } from "./models/cart.model";
 
 const enum ORDER_STATUS {
   CREATED = "created",
@@ -41,7 +41,7 @@ const mockedDelivery = {
 export const findOrderByCartId = (findCartId: string) => {
   const order = orders_db.find(({ cartId }) => cartId === findCartId) || null;
 
-  return structuredClone(order);
+  return JSON.parse(JSON.stringify(order));
 };
 
 export const createOrder = (
