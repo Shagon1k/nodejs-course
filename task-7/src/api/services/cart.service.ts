@@ -3,7 +3,7 @@ import {
   productRepository,
   orderRepository,
 } from "../repositories";
-import { ICartItemEntity } from "../repositories/models/cart.model";
+import { type ICartItemEntity } from "../repositories/models/cart.model";
 import omitFields from "../helpers/omitFields";
 
 export const enum CART_ERRORS {
@@ -66,10 +66,14 @@ export const checkout = async (userId: string) => {
     return CART_ERRORS.CART_IS_EMPTY;
   }
 
-  orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
+  await orderRepository.createOrder(
+    userId,
+    cart.toObject(),
+    calculateTotal(cart.items)
+  );
   await cartRepository.deleteCartById(cart._id);
 
-  const createdOrder = orderRepository.findOrderByCartId(cart._id)!;
+  const createdOrder = await orderRepository.findOrderByCartId(cart._id)!;
 
   return createdOrder;
 };

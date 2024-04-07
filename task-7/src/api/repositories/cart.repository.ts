@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import CartModel from "./models/cart.model";
-import { IProductEntity } from "./models/product.model";
+import { type IProductEntity } from "./models/product.model";
 
 export const findCartByUserId = async (findUserId: string) => {
   const cart = await CartModel.findOne({ userId: findUserId }).select("-__v");

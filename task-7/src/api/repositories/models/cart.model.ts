@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IProductEntity, ProductSchema } from "./product.model";
+import { type IProductEntity, ProductSchema } from "./product.model";
 
 export interface ICartItemEntity {
   product: IProductEntity;
