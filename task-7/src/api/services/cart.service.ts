@@ -26,7 +26,7 @@ export const getCartByUserId = async (userId: string) => {
 
   const total = calculateTotal(cart.items);
 
-  return { cart: omitFields(cart.toObject(), ["isDeleted"]), total };
+  return { cart: omitFields(cart, ["isDeleted"]), total };
 };
 
 export const updateCart = async (
@@ -47,12 +47,12 @@ export const updateCart = async (
   }
 
   // Add item to cart or update it's count
-  await cartRepository.updateCartItem(cart.id, product, count);
+  await cartRepository.updateCartItem(cart._id, product, count);
 
   const updatedCart = (await cartRepository.findCartByUserId(userId))!;
   const total = calculateTotal(updatedCart.items);
   // Return updated cart
-  return { cart: omitFields(updatedCart.toObject(), ["isDeleted"]), total };
+  return { cart: omitFields(updatedCart, ["isDeleted"]), total };
 };
 
 export const emptyCartByUserId = async (userId: string) => {
@@ -66,11 +66,7 @@ export const checkout = async (userId: string) => {
     return CART_ERRORS.CART_IS_EMPTY;
   }
 
-  await orderRepository.createOrder(
-    userId,
-    cart.toObject(),
-    calculateTotal(cart.items)
-  );
+  await orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
   await cartRepository.deleteCartById(cart._id);
 
   const createdOrder = await orderRepository.findOrderByCartId(cart._id)!;

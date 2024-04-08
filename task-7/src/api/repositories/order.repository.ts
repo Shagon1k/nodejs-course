@@ -14,7 +14,7 @@ const mockedDelivery = {
 };
 
 export const findOrderByCartId = async (findCartId: string) => {
-  const order = OrderModel.find({ cartId: findCartId }).select("-__v");
+  const order = OrderModel.find({ cartId: findCartId }).select("-__v").lean();
 
   return order || null;
 };

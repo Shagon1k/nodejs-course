@@ -3,7 +3,9 @@ import CartModel from "./models/cart.model";
 import { type IProductEntity } from "./models/product.model";
 
 export const findCartByUserId = async (findUserId: string) => {
-  const cart = await CartModel.findOne({ userId: findUserId }).select("-__v");
+  const cart = await CartModel.findOne({ userId: findUserId })
+    .select("-__v")
+    .lean();
 
   return cart || null;
 };
@@ -54,6 +56,7 @@ export const updateCartItem = async (
       cart.items[cartItemIndex].count = count;
     }
   }
+
   // Update Cart in Database
   await cart.save();
 };
