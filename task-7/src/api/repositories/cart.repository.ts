@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import CartModel from "./models/cart.model";
+import CartModel, { type ICartEntity } from "./models/cart.model";
 import { type IProductEntity } from "./models/product.model";
 
 export const findCartByUserId = async (findUserId: string) => {
@@ -19,7 +19,7 @@ export const deleteCartById = async (cartId: string) => {
 };
 
 export const createCart = async (userId: string) => {
-  const newCart = {
+  const newCart: ICartEntity = {
     _id: randomUUID(),
     userId: userId,
     isDeleted: false,

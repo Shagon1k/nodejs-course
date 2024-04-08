@@ -1,6 +1,9 @@
 import { randomUUID } from "crypto";
 import { type ICartEntity } from "./models/cart.model";
-import OrderModel, { ORDER_STATUS } from "./models/order.model";
+import OrderModel, {
+  type IOrderEntity,
+  ORDER_STATUS,
+} from "./models/order.model";
 
 const mockedPayment = {
   type: "paypal",
@@ -24,7 +27,7 @@ export const createOrder = async (
   cart: ICartEntity,
   total: number
 ) => {
-  const newOrder = {
+  const newOrder: IOrderEntity = {
     _id: randomUUID(),
     userId,
     cartId: cart._id,

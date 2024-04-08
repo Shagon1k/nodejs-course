@@ -6,7 +6,7 @@ export const enum ORDER_STATUS {
   COMPLETED = "completed",
 }
 
-interface IOrderEntity {
+export interface IOrderEntity {
   _id: string;
   userId: string;
   cartId: string;
