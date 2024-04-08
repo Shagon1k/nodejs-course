@@ -41,7 +41,7 @@ export const updateCartItem = async (
   }
 
   const cartItemIndex = cart.items.findIndex(
-    ({ product: { id } }) => id === item.id
+    ({ product: { _id } }) => _id === item._id
   );
 
   if (cartItemIndex === -1 && count > 0) {

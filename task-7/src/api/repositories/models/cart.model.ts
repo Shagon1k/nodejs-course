@@ -14,7 +14,7 @@ export const CartItemSchema = new Schema(
   { _id: false }
 );
 
-export interface ICartEntity extends Document {
+export interface ICartEntity {
   _id: string;
   userId: string;
   isDeleted: boolean;
@@ -28,4 +28,4 @@ const CartSchema: Schema = new Schema({
   items: { type: [CartItemSchema], default: [] },
 });
 
-export default mongoose.model<ICartEntity>("Cart", CartSchema);
+export default mongoose.model<ICartEntity & Document>("Cart", CartSchema);

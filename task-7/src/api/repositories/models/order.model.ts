@@ -6,7 +6,7 @@ export const enum ORDER_STATUS {
   COMPLETED = "completed",
 }
 
-interface IOrderEntity extends Document {
+interface IOrderEntity {
   _id: string;
   userId: string;
   cartId: string;
@@ -54,4 +54,4 @@ const OrderSchema: Schema = new Schema({
   total: { type: Number, required: true },
 });
 
-export default mongoose.model<IOrderEntity>("Order", OrderSchema);
+export default mongoose.model<IOrderEntity & Document>("Order", OrderSchema);
