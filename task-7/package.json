@@ -12,8 +12,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "start": "pm2 start build/index.js --name task-5-app",
-        "stop": "pm2 stop task-5-app",
+        "start": "pm2 start build/index.js --name task-7-app",
+        "stop": "pm2 stop task-7-app",
         "start:dev": "cd src && ts-node index.ts",
         "db:start:local": "podman compose up -d",
         "db:stop:local": "podman stop shop-db"
