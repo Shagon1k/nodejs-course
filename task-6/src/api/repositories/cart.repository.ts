@@ -63,15 +63,23 @@ export const updateCartItem = (
     ({ product: { id } }) => id === item.id
   );
 
-  if (cartItemIndex === -1 && count > 0) {
-    cart.items.push({ product: item, count });
-  } else {
-    if (count === 0) {
-      // Drop (remove) item if new count equals 0
-      cart.items.splice(cartItemIndex, 1);
+  if (cartItemIndex === -1) {
+    // New item flow
+    if (count > 0) {
+      // Add new item if not exist
+      cart.items.push({ product: item, count });
     } else {
+      // Do nothing if 0 count of new item should be added
+      return;
+    }
+  } else {
+    // Existing item flow
+    if (count > 0) {
       // Update item's count if it > 0
       cart.items[cartItemIndex].count = count;
+    } else {
+      // Drop (remove) item if new count equals 0
+      cart.items.splice(cartItemIndex, 1);
     }
   }
 };
