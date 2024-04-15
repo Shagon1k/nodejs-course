@@ -5,10 +5,11 @@ import UserModel from "../api/repositories/models/user.model";
 
 export const initDatabase = async () => {
   try {
-    const { DB_USER_USERNAME, DB_USER_PASSWORD, DB_NAME } = process.env;
+    const { DB_HOST, DB_PORT, DB_USER_USERNAME, DB_USER_PASSWORD, DB_NAME } =
+      process.env;
 
     await mongoose.connect(
-      `mongodb://${DB_USER_USERNAME}:${DB_USER_PASSWORD}@localhost:27017/${DB_NAME}`
+      `mongodb://${DB_USER_USERNAME}:${DB_USER_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
     );
     console.log("DB INIT: Connected to MongoDB");
 

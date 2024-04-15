@@ -29,7 +29,7 @@ In this task you will need to modify the application you created in Express and 
 
 ## Application Pre-setup
 
-1. Create `.env` file with variables:
+1. Create `.env.dev` file with variables:
    - `DB_ROOT_USERNAME`: MongoDB root username;
    - `DB_ROOT_PASSWORD` MongoDB root password;
    - `DB_USER_USERNAME`: MongoDB user username;
