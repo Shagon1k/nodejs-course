@@ -1,6 +1,6 @@
 # Summary
 
-We are going to create an Express application for online shop which sells different types of products (like e.g Amazon). We are going to implement functionality for managing carts, creating orders and products.
+In this task you will need to modify the application you created in Express and Layered Architecture module by moving data storage to Relational database.
 
 **The application has 4 primary entities:**
 
@@ -11,7 +11,7 @@ We are going to create an Express application for online shop which sells differ
 
 **Relations between entities:**
 
-- Each `User` can have only one non-deleted `Cart` at a time. Each Cart is attached to a specific `User`.
+- Each `User` can have only one **non-deleted** `Cart` at a time. Each Cart is attached to a specific `User`.
 - One `User` can have multiple `Order`s. Each `Order` is attached to a specific `User`.
 - `Cart` contains a list of products that user wants to order **with the amount** of those products specified.
 
@@ -19,15 +19,26 @@ We are going to create an Express application for online shop which sells differ
 
 **Note:** TypeScript should be used.
 
-1. Server is created using Express framework.
-   - Server should be started using `npm start` command and stopped by `npm run stop`. Server is running on `8000` port.
-2. API implementation follows [Swagger](https://git.epam.com/ld-global-coordinators/js-programs/nodejs-gmp-coursebook/-/blob/master/public-for-mentees/6-express-layered-architecture/swagger.yaml). Proper [HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) are returned in responses (not only 200 or 500).
-   - Auth endpoints should be skipped at this point.
-   - If token is not provided, 401 status code should be returned. If there is no such a user, 403 status code should be returned.
-   - At least one product should be available in `/api/products` endpoint
-   - Order entity has **copy of products**. _If you have only product id in order, it may lead to inconsistency. For example, if user creates an order and after that price is changed, the order price shouldn't be changed._
-3. Application is implemented following Three Layered Architecture. Layers are separated by file names. For example `xxx.repository.ts` contains functions to retrieve data (data access layer), `xxx.service.ts` contains services that implement business logic, `xxx.controller.ts` contains functions that manage status codes/responses returned (presentation layer).
-4. Data is stored either in memory or on file system.
-5. [joi](https://www.npmjs.com/package/joi) is used to validate request bodies.
-6. Simple authentication middleware is added to check if user with such id exists. User id is passed in `x-user-id` header.
-   - `admin` value is hardcoded for `x-user-id` header and can be used to access all these endpoints.
+1. Data is stored in PostgreSQL database. Podman is used for local development.
+2. ORM is used to query data (e.g [TypeORM](https://www.npmjs.com/package/typeorm), [Sequelize](https://www.npmjs.com/package/sequelize) or [Mikro-ORM](https://www.npmjs.com/package/mikro-orm)).
+   - If you are using Mikro-ORM, [type-safe relations](https://mikro-orm.io/docs/type-safe-relations) and collections are used.
+3. Migrations are used to create and delete tables ([TypeORM](https://orkhan.gitbook.io/typeorm/docs/migrations), [Sequelize](https://sequelize.org/docs/v6/other-topics/migrations/), [Mikro-ORM](https://mikro-orm.io/docs/migrations)).
+4. Seeds are used to populate database with test data, e.g products, orders ([TypeORM](https://dev.to/franciscomendes10866/how-to-seed-database-using-typeorm-seeding-4kd5), [Sequelize](https://sequelize.org/docs/v6/other-topics/migrations/#creating-the-first-seed), [Mikro-ORM](https://mikro-orm.io/docs/seeding))
+
+# Notes
+
+## Application Pre-setup
+
+1. Create `.env` file with variables:
+   - `DB_ROOT_USERNAME`: PostgreSQL root username;
+   - `DB_ROOT_PASSWORD`: PostgreSQL root password;
+   - `DB_NAME`: PostgreSQL database name;
+2. Create `.env.dev` file with variables:
+   - TBD;
+3. To setup your PostgreSQL use `npm run db:start:local`.
+   - Don't forget to setup `DB_ROOT_USERNAME`, `DB_ROOT_PASSWORD` and `DB_NAME` environment variables in `.env`.
+4. Application includes **migrations** _(for DDLs)_ and **seeds** _(for DMLs)_:
+   - To create tables in database use: `npx mikro-orm migration:up`;
+   - To fill tables with predefined testing data use: `npx mikro-orm seeder:run`;
+   - Alternatively instead of 2 previous points `npx mikro-orm migration:fresh --seed` could be used, which will drop database, re-create migration and run seeds.
+5. Then you are ready to go.
