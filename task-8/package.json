@@ -6,7 +6,7 @@
         "build": "tsc",
         "start": "pm2 start build/index.js --name task-8-app",
         "stop": "pm2 stop task-8-app",
-        "start:dev": "cd src && ts-node index.ts",
+        "start:dev": "ts-node src/index.ts",
         "db:start:local": "podman compose up -d",
         "db:stop:local": "podman stop shop-db_sql"
     },

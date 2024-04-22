@@ -4,10 +4,7 @@ services:
     container_name: "shop-db_sql"
     image: postgres
     restart: always
-    environment:
-      - POSTGRES_USER=${DB_ROOT_USERNAME}
-      - POSTGRES_PASSWORD=${DB_ROOT_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+    env_file: .env.dev
     ports:
       - 5435:5432
     expose:

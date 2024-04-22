@@ -11,12 +11,13 @@ const APP_ENV = "dev";
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${APP_ENV}`) });
 
 const options: IOptions<PostgreSqlDriver> = {
+  baseDir: process.cwd(),
   driver: PostgreSqlDriver,
-  dbName: process.env.MIKRO_ORM_DB_NAME,
-  user: process.env.MIKRO_ORM_USER,
-  password: process.env.MIKRO_ORM_PASSWORD,
-  host: process.env.MIKRO_ORM_HOST,
-  port: +process.env.MIKRO_ORM_PORT!,
+  dbName: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  host: process.env.POSTGRES_HOST,
+  port: +process.env.POSTGRES_PORT!,
   // path to your JS entities (dist), relative to `baseDir`
   entities: ["./build/api/repositories/entities"],
   // path to our TS entities (src), relative to `baseDir`

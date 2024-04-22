@@ -4,8 +4,7 @@ services:
     image: "mongo"
     container_name: "shop-db"
     restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    env_file:
+      - .env.dev
     ports:
       - "27017:27017"

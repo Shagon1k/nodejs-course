@@ -1,7 +1,7 @@
 import { userRepository } from "../repositories";
 
-export const checkIfUserExist = (userId: string) => {
-  const user = userRepository.getUserById(userId);
+export const checkIfUserExist = async (userId: string) => {
+  const user = await userRepository.getUserById(userId);
 
   return !!user;
 };

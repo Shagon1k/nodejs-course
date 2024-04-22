@@ -29,16 +29,16 @@ In this task you will need to modify the application you created in Express and 
 
 ## Application Pre-setup
 
-1. Create `.env` file with variables:
-   - `DB_ROOT_USERNAME`: PostgreSQL root username;
-   - `DB_ROOT_PASSWORD`: PostgreSQL root password;
-   - `DB_NAME`: PostgreSQL database name;
-2. Create `.env.dev` file with variables:
-   - TBD;
-3. To setup your PostgreSQL use `npm run db:start:local`.
-   - Don't forget to setup `DB_ROOT_USERNAME`, `DB_ROOT_PASSWORD` and `DB_NAME` environment variables in `.env`.
-4. Application includes **migrations** _(for DDLs)_ and **seeds** _(for DMLs)_:
+1. Create `.env.dev` file with variables:
+   - `POSTGRES_DB`: PostgreSQL database name _(keep naming, used for Docker configuration)_;
+   - `POSTGRES_USER`: PostgreSQL root username _(keep naming, used for Docker configuration)_;
+   - `POSTGRES_PASSWORD`: PostgreSQL root password _(keep naming, used for Docker configuration)_;
+   - `POSTGRES_HOST`: PostgreSQL host name _("localhost" with default Docker config)_;
+   - `POSTGRES_PORT`: PostgreSQL database port _(e.g. "5435", keep aligning with Docker config)_;
+2. To setup your PostgreSQL use `npm run db:start:local`.
+3. Application includes **migrations** _(for DDLs)_ and **seeds** _(for DMLs)_:
+   - (optional) If migrations do not exist/deleted accidentally - use: `npx mikro-orm migration:create`;
    - To create tables in database use: `npx mikro-orm migration:up`;
    - To fill tables with predefined testing data use: `npx mikro-orm seeder:run`;
    - Alternatively instead of 2 previous points `npx mikro-orm migration:fresh --seed` could be used, which will drop database, re-create migration and run seeds.
-5. Then you are ready to go.
+4. Then you are ready to go.
