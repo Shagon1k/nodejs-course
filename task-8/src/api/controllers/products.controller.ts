@@ -8,7 +8,7 @@ const productsController = Router();
 
 productsController.get("/", async (_, res, next) => {
   try {
-    const products = productsService.getAllProducts();
+    const products = await productsService.getAllProducts();
 
     res.status(STATUS_CODES.OK).send(generateResponse(products));
   } catch (e) {
@@ -20,7 +20,7 @@ productsController.get("/:productId", async (req, res, next) => {
   try {
     const productId = req.params.productId;
 
-    const product = productsService.getProductById(productId);
+    const product = await productsService.getProductById(productId);
 
     if (!product) {
       throw new APIError("No product with such id", STATUS_CODES.NOT_FOUND);

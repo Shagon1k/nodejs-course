@@ -1,32 +1,16 @@
-export interface IProductEntity {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-}
+import { entityManager } from "../../server";
+import { Product } from "./entities/product.entity";
 
-// Mocked Products Database
-const products_db: IProductEntity[] = [
-  {
-    id: "b073d31b-6cd1-4dd3-8a73-d1b48c6cbd81",
-    title: "Don Quixote",
-    description: "Don Quixote by Miguel de Cervantes",
-    price: 29.99,
-  },
-  {
-    id: "28364493-2462-43c3-9f64-7af5175f978a",
-    title: "Moby Dick",
-    description: "Moby Dick by Herman Melville",
-    price: 31.99,
-  },
-];
+export const findProductById = async (productId: string) => {
+  const productRepository = entityManager.getRepository(Product);
+  const product = await productRepository.findOne(productId);
 
-export const findProductById = (productId: string) => {
-  const product = products_db.find(({ id }) => id === productId) || null;
-
-  return structuredClone(product);
+  return product;
 };
 
-export const findAllProducts = () => {
-  return [...products_db];
+export const findAllProducts = async () => {
+  const productRepository = entityManager.getRepository(Product);
+  const products = await productRepository.findAll();
+
+  return products;
 };

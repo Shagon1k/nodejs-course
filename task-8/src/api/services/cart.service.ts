@@ -28,12 +28,12 @@ export const getCartByUserId = (userId: string) => {
   return { cart: omitFields(cart, ["isDeleted"]), total };
 };
 
-export const updateCart = (
+export const updateCart = async (
   userId: string,
   productId: string,
   count: number
 ) => {
-  const product = productRepository.findProductById(productId);
+  const product = await productRepository.findProductById(productId);
   // No such product
   if (!product) {
     return CART_ERRORS.NO_PRODUCT;

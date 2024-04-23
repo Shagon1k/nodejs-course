@@ -37,7 +37,11 @@ cartController.put("/", async (req, res, next) => {
     }
 
     const { userId, productId, count } = validatedRequest.value;
-    const updateCartResult = cartService.updateCart(userId, productId, count);
+    const updateCartResult = await cartService.updateCart(
+      userId,
+      productId,
+      count
+    );
 
     // No product with such ID
     if (updateCartResult === cartService.CART_ERRORS.NO_PRODUCT) {

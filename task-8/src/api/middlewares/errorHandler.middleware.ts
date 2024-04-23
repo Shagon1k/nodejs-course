@@ -23,7 +23,7 @@ const errorHandlerMiddleware = (
 
     res
       .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-      .send(generateResponse(undefined, error.message));
+      .send(generateResponse(undefined, "Internal server error.")); // Do not expose internal server errors to avoid exposing implementation details
   }
 };
 

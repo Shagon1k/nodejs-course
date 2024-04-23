@@ -1,7 +1,7 @@
 import { entityManager } from "../../server";
 import { User } from "./entities/user.entity";
 
-export const getUserById = async (userId: string) => {
+export const findUserById = async (userId: string) => {
   const userRepository = entityManager.getRepository(User);
   const user = await userRepository.findOne(userId);
 

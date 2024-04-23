@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
-import { IProductEntity } from "./product.repository";
+import { Product as IProduct } from "./entities/product.entity";
 
 export interface ICartItemEntity {
-  product: IProductEntity;
+  product: IProduct;
   count: number;
 }
 
@@ -50,7 +50,7 @@ export const createCart = (userId: string) => {
 
 export const updateCartItem = (
   cartId: string,
-  item: IProductEntity,
+  item: IProduct,
   count: number = 1
 ) => {
   const cart = carts_db.find(({ id }) => id === cartId);
