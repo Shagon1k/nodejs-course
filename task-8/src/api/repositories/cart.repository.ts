@@ -1,59 +1,54 @@
-import { randomUUID } from "crypto";
+import { Reference } from "@mikro-orm/core";
+import { entityManager } from "../../server";
+import { Cart } from "./entities/cart.entity";
 import { Product as IProduct } from "./entities/product.entity";
 
-export interface ICartItemEntity {
-  product: IProduct;
-  count: number;
-}
+export const findCartByUserId = async (findUserId: string) => {
+  const cartRepository = entityManager.getRepository(Cart);
+  const cart = await cartRepository.findOne({
+    user: { id: findUserId },
+    isDeleted: false,
+  });
 
-export interface ICartEntity {
-  id: string;
-  userId: string;
-  isDeleted: boolean;
-  items: ICartItemEntity[];
-}
-
-const carts_db: ICartEntity[] = [];
-
-export const findCartByUserId = (findUserId: string) => {
-  const cart = carts_db.find(({ userId }) => userId === findUserId) || null;
-
-  return structuredClone(cart);
+  return cart;
 };
 
-export const emptyCartByUserId = (emptyUserId: string) => {
-  const cart = carts_db.find(({ userId }) => userId === emptyUserId);
+export const emptyCartByUserId = async (emptyUserId: string) => {
+  const cart = await findCartByUserId(emptyUserId);
 
   if (cart) {
     cart.items = [];
+    await entityManager.flush();
   }
 };
 
-export const deleteCartById = (cartId: string) => {
-  const cartIndex = carts_db.findIndex(({ id }) => id === cartId);
+export const deleteCartById = async (cartId: string) => {
+  const cartRepository = entityManager.getRepository(Cart);
+  const cart = await cartRepository.findOne(cartId);
 
-  if (cartIndex !== -1) {
-    carts_db.splice(cartIndex, 1);
+  if (cart) {
+    cart.isDeleted = true;
+    await entityManager.flush();
   }
 };
 
-export const createCart = (userId: string) => {
-  const newCart: ICartEntity = {
-    id: randomUUID(),
-    userId: userId,
+export const createCart = async (userId: string) => {
+  const cartRepository = entityManager.getRepository(Cart);
+
+  cartRepository.create({
+    user: Reference.createFromPK(Cart, userId),
     isDeleted: false,
     items: [],
-  };
-
-  carts_db.push(newCart);
+  });
 };
 
-export const updateCartItem = (
+export const updateCartItem = async (
   cartId: string,
   item: IProduct,
   count: number = 1
 ) => {
-  const cart = carts_db.find(({ id }) => id === cartId);
+  const cartRepository = entityManager.getRepository(Cart);
+  const cart = await cartRepository.findOne(cartId);
 
   if (!cart) {
     return;
@@ -82,4 +77,6 @@ export const updateCartItem = (
       cart.items.splice(cartItemIndex, 1);
     }
   }
+
+  await entityManager.flush();
 };

@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryKey,
-  Property,
-  //   OneToMany,
-  //   Collection,
-} from "@mikro-orm/core";
-// import { CartItem } from "./cart.entity";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 
 @Entity()
 export class Product {
@@ -20,7 +13,4 @@ export class Product {
 
   @Property({ columnType: "numeric(6, 2)" })
   price!: number;
-
-  // @OneToMany(() => CartItem, (cartItem) => cartItem.product, { nullable: true }) // Relationship definition
-  // cartItems: Collection<CartItem> = new Collection<CartItem>(this);
 }

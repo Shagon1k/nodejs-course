@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { ICartEntity, ICartItemEntity } from "./cart.repository";
+import { ICartItem, type Cart as ICart } from "./entities/cart.entity";
 
 const enum ORDER_STATUS {
   CREATED = "created",
@@ -10,7 +10,7 @@ export interface IOrderEntity {
   id: string;
   userId: string;
   cartId: string;
-  items: ICartItemEntity[];
+  items: ICartItem[];
   payment: {
     type: string;
     address?: any;
@@ -44,11 +44,7 @@ export const findOrderByCartId = (findCartId: string) => {
   return structuredClone(order);
 };
 
-export const createOrder = (
-  userId: string,
-  cart: ICartEntity,
-  total: number
-) => {
+export const createOrder = (userId: string, cart: ICart, total: number) => {
   const newOrder: IOrderEntity = {
     id: randomUUID(),
     userId,

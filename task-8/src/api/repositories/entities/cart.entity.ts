@@ -10,18 +10,10 @@ import {
 import { User } from "./user.entity";
 import { Product } from "./product.entity";
 import { Order } from "./order.entity";
-
-// @Entity()
-// export class CartItem {
-//   @PrimaryKey()
-//   id!: number;
-
-//   @Property({ type: "integer" })
-//   count!: number;
-
-//   @ManyToOne(() => Product)
-//   product!: Product;
-// }
+export interface ICartItem {
+  product: Product;
+  count: number;
+}
 
 @Entity()
 export class Cart {
@@ -29,7 +21,7 @@ export class Cart {
   id!: string;
 
   @ManyToOne(() => User, { nullable: false, ref: true })
-  user?: Ref<User>;
+  user!: Ref<User>;
 
   @OneToOne(() => Order, (order) => order.cart)
   order?: Order;
@@ -37,7 +29,6 @@ export class Cart {
   @Property()
   isDeleted: boolean & Opt = true;
 
-  // TO ASK: Whether such approach "ok" considering Products should not be aware of (relate to) Carts
   @Property({ type: "json" })
-  items: { product: Product; count: number }[] & Opt = [];
+  items: ICartItem[] & Opt = [];
 }
