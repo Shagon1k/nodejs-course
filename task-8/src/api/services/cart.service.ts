@@ -66,10 +66,10 @@ export const checkout = async (userId: string) => {
     return CART_ERRORS.CART_IS_EMPTY;
   }
 
-  orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
+  await orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
   await cartRepository.deleteCartById(cart.id);
 
-  const createdOrder = orderRepository.findOrderByCartId(cart.id)!;
+  const createdOrder = await orderRepository.findOrderByCartId(cart.id)!;
 
   return createdOrder;
 };
