@@ -1,4 +1,4 @@
-import { Reference } from "@mikro-orm/core";
+import { Reference, wrap } from "@mikro-orm/core";
 import { entityManager } from "../../server";
 import { Order, ORDER_STATUS } from "./entities/order.entity";
 import { type Cart as ICart } from "./entities/cart.entity";
@@ -20,7 +20,7 @@ export const findOrderByCartId = async (findCartId: string) => {
     cart: { id: findCartId },
   });
 
-  return order;
+  return order ? wrap(order).toObject() : order;
 };
 
 export const createOrder = async (

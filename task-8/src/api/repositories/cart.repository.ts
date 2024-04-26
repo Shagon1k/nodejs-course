@@ -1,20 +1,27 @@
-import { Reference } from "@mikro-orm/core";
+import { Reference, wrap } from "@mikro-orm/core";
 import { entityManager } from "../../server";
 import { Cart } from "./entities/cart.entity";
 import { Product as IProduct } from "./entities/product.entity";
 
-export const findCartByUserId = async (findUserId: string) => {
+export const findCartByUserId = async (
+  findUserId: string,
+  options: { isSerialized: boolean } = { isSerialized: true }
+) => {
   const cartRepository = entityManager.getRepository(Cart);
-  const cart = await cartRepository.findOne({
+  const cartLoaded = await cartRepository.findOne({
     user: { id: findUserId },
     isDeleted: false,
   });
 
-  return cart;
+  if (options?.isSerialized) {
+    return cartLoaded ? wrap(cartLoaded).toObject() : cartLoaded;
+  }
+
+  return cartLoaded;
 };
 
 export const emptyCartByUserId = async (emptyUserId: string) => {
-  const cart = await findCartByUserId(emptyUserId);
+  const cart = await findCartByUserId(emptyUserId, { isSerialized: false });
 
   if (cart) {
     cart.items = [];

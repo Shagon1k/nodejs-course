@@ -13,7 +13,7 @@ cartController.get("/", async (req, res, next) => {
     const userId = req.headers[AUTH_TOKEN_HEADER] as string;
     const { cart, total } = await cartService.getCartByUserId(userId);
 
-    res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
+    res.status(STATUS_CODES.OK).json(generateResponse({ cart, total }));
   } catch (e) {
     next(e);
   }
@@ -54,7 +54,7 @@ cartController.put("/", async (req, res, next) => {
     }
 
     const { cart, total } = updateCartResult;
-    res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
+    res.status(STATUS_CODES.OK).json(generateResponse({ cart, total }));
   } catch (e) {
     next(e);
   }
@@ -66,7 +66,7 @@ cartController.delete("/", async (req, res, next) => {
 
     await cartService.emptyCartByUserId(userId);
 
-    res.status(STATUS_CODES.OK).send(generateResponse({ success: true }));
+    res.status(STATUS_CODES.OK).json(generateResponse({ success: true }));
   } catch (e) {
     next(e);
   }
@@ -84,7 +84,7 @@ cartController.post("/checkout", async (req, res, next) => {
 
     res
       .status(STATUS_CODES.OK)
-      .send(generateResponse({ order: checkoutResult }));
+      .json(generateResponse({ order: checkoutResult }));
   } catch (e) {
     next(e);
   }

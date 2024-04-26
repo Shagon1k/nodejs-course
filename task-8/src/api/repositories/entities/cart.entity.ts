@@ -20,7 +20,12 @@ export class Cart {
   @PrimaryKey({ type: "uuid", defaultRaw: "gen_random_uuid()" })
   id!: string;
 
-  @ManyToOne(() => User, { nullable: false, ref: true })
+  @ManyToOne(() => User, {
+    nullable: false,
+    ref: true,
+    serializer: (value) => value.id,
+    serializedName: "userId",
+  })
   user!: Ref<User>;
 
   @OneToOne(() => Order, (order) => order.cart)

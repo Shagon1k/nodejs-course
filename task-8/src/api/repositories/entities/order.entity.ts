@@ -22,10 +22,18 @@ export class Order {
   @PrimaryKey({ type: "uuid", defaultRaw: "gen_random_uuid()" })
   id!: string;
 
-  @OneToOne(() => Cart, (cart) => cart.order, { owner: true })
+  @OneToOne(() => Cart, (cart) => cart.order, {
+    owner: true,
+    serializer: (value) => value.id,
+    serializedName: "cartId",
+  })
   cart!: Cart;
 
-  @ManyToOne(() => User, { ref: true })
+  @ManyToOne(() => User, {
+    ref: true,
+    serializer: (value) => value.id,
+    serializedName: "userId",
+  })
   user!: Ref<User>;
 
   // TO ASK: Whether such approach "ok" considering Products should not be aware of (relate to) Carts

@@ -1,9 +1,13 @@
+import { type Loaded as ILoaded } from "@mikro-orm/core";
 import {
   cartRepository,
   productRepository,
   orderRepository,
 } from "../repositories";
-import { ICartItem } from "../repositories/entities/cart.entity";
+import {
+  type ICartItem,
+  type Cart,
+} from "../repositories/entities/cart.entity";
 import omitFields from "../helpers/omitFields";
 
 export const enum CART_ERRORS {
@@ -60,7 +64,9 @@ export const emptyCartByUserId = async (userId: string) => {
 };
 
 export const checkout = async (userId: string) => {
-  const cart = await cartRepository.findCartByUserId(userId);
+  const cart = (await cartRepository.findCartByUserId(userId, {
+    isSerialized: false,
+  })) as ILoaded<Cart, never, "*", never>;
 
   if (!cart || cart.items.length === 0) {
     return CART_ERRORS.CART_IS_EMPTY;
