@@ -1,0 +1,11 @@
+version: "3"
+services:
+  postgres-db:
+    container_name: "shop-db_sql"
+    image: postgres
+    restart: always
+    env_file: .env.dev
+    ports:
+      - 5435:5432
+    expose:
+      - "5435"
