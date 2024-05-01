@@ -1,13 +1,20 @@
 import { Router } from "express";
-import { authMiddleware, errorHandlerMiddleware } from "./middlewares";
-import { cartController, productsController } from "./controllers";
+
+import {
+  verifyAuthTokenMiddleware,
+  errorHandlerMiddleware,
+} from "./middlewares";
+import {
+  cartController,
+  productsController,
+  authController,
+} from "./controllers";
 
 const apiRouter = Router();
 
-apiRouter.use(authMiddleware);
-
-apiRouter.use("/profile/cart", cartController);
-apiRouter.use("/products", productsController);
+apiRouter.use("/auth", authController);
+apiRouter.use("/profile/cart", verifyAuthTokenMiddleware, cartController);
+apiRouter.use("/products", verifyAuthTokenMiddleware, productsController);
 
 apiRouter.use(errorHandlerMiddleware);
 

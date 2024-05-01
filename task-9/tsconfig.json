@@ -16,5 +16,9 @@
     "declaration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+  "ts-node": {
+    "files": true
+  },
+  "files": ["src/index.ts", "src/declarations.d.ts"]
 }

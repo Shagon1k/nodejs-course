@@ -43,7 +43,7 @@ export const createCart = async (userId: string) => {
   const cartRepository = entityManager.getRepository(Cart);
 
   cartRepository.create({
-    user: Reference.createFromPK(Cart, userId),
+    user: userId,
     isDeleted: false,
     items: [],
   });

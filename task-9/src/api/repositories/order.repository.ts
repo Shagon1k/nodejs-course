@@ -31,7 +31,7 @@ export const createOrder = async (
   const orderRepository = entityManager.getRepository(Order);
 
   orderRepository.create({
-    user: Reference.createFromPK(Order, userId),
+    user: userId,
     cart,
     items: cart.items,
     payment: { ...mockedPayment },

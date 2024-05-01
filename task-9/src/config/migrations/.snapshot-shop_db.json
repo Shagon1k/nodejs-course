@@ -62,7 +62,24 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": {
+          "name": "user_role",
+          "schema": "public",
+          "items": [
+            "admin",
+            "simple_user"
+          ]
+        },
+        "order_status": {
+          "name": "order_status",
+          "schema": "public",
+          "items": [
+            "created",
+            "completed"
+          ]
+        }
+      }
     },
     {
       "columns": {
@@ -75,11 +92,53 @@
           "nullable": false,
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "nativeEnumName": "user_role",
+          "enumItems": [
+            "admin",
+            "simple_user"
+          ],
+          "mappedType": "enum"
         }
       },
       "name": "user",
       "schema": "public",
       "indexes": [
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "user_email_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
         {
           "keyName": "user_pkey",
           "columnNames": [
@@ -93,7 +152,24 @@
       ],
       "checks": [],
       "foreignKeys": {},
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": {
+          "name": "user_role",
+          "schema": "public",
+          "items": [
+            "admin",
+            "simple_user"
+          ]
+        },
+        "order_status": {
+          "name": "order_status",
+          "schema": "public",
+          "items": [
+            "created",
+            "completed"
+          ]
+        }
+      }
     },
     {
       "columns": {
@@ -165,7 +241,24 @@
           "updateRule": "cascade"
         }
       },
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": {
+          "name": "user_role",
+          "schema": "public",
+          "items": [
+            "admin",
+            "simple_user"
+          ]
+        },
+        "order_status": {
+          "name": "order_status",
+          "schema": "public",
+          "items": [
+            "created",
+            "completed"
+          ]
+        }
+      }
     },
     {
       "columns": {
@@ -235,11 +328,12 @@
         },
         "status": {
           "name": "status",
-          "type": "text",
+          "type": "order_status",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "nativeEnumName": "order_status",
           "enumItems": [
             "created",
             "completed"
@@ -309,8 +403,42 @@
           "updateRule": "cascade"
         }
       },
-      "nativeEnums": {}
+      "nativeEnums": {
+        "user_role": {
+          "name": "user_role",
+          "schema": "public",
+          "items": [
+            "admin",
+            "simple_user"
+          ]
+        },
+        "order_status": {
+          "name": "order_status",
+          "schema": "public",
+          "items": [
+            "created",
+            "completed"
+          ]
+        }
+      }
     }
   ],
-  "nativeEnums": {}
+  "nativeEnums": {
+    "user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "items": [
+        "admin",
+        "simple_user"
+      ]
+    },
+    "order_status": {
+      "name": "order_status",
+      "schema": "public",
+      "items": [
+        "created",
+        "completed"
+      ]
+    }
+  }
 }

@@ -49,7 +49,10 @@ export class Order {
   @Property()
   comments!: string;
 
-  @Enum(() => ORDER_STATUS)
+  @Enum({
+    items: () => ORDER_STATUS,
+    nativeEnumName: "order_status",
+  })
   status!: ORDER_STATUS;
 
   @Property({ columnType: "numeric(8, 2)" })

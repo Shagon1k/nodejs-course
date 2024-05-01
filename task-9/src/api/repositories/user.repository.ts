@@ -1,10 +1,30 @@
 import { wrap } from "@mikro-orm/core";
 import { entityManager } from "../../server";
-import { User } from "./entities/user.entity";
+import { User, USER_ROLES } from "./entities/user.entity";
 
 export const findUserById = async (userId: string) => {
   const userRepository = entityManager.getRepository(User);
   const userLoaded = await userRepository.findOne(userId);
 
   return userLoaded ? wrap(userLoaded).toObject() : userLoaded;
+};
+
+export const findUserByEmail = async (email: string) => {
+  const userRepository = entityManager.getRepository(User);
+  const userLoaded = await userRepository.findOne({ email });
+
+  return userLoaded ? wrap(userLoaded).toObject() : userLoaded;
+};
+
+export const createUser = async (
+  email: string,
+  password: string,
+  role: USER_ROLES
+) => {
+  const userRepository = entityManager.getRepository(User);
+  userRepository.create({
+    email,
+    password,
+    role,
+  });
 };
