@@ -11,7 +11,10 @@ export const findUserById = async (userId: string) => {
 
 export const findUserByEmail = async (email: string) => {
   const userRepository = entityManager.getRepository(User);
-  const userLoaded = await userRepository.findOne({ email });
+  const userLoaded = await userRepository.findOne(
+    { email },
+    { fields: ["id", "email", "password", "role"] } // Note: { exclude: ["carts", "orders"] } is not working for some reason ¯\_(ツ)_/¯
+  );
 
   return userLoaded ? wrap(userLoaded).toObject() : userLoaded;
 };
