@@ -6,22 +6,30 @@ import { productsService } from "../services";
 
 const productsController = Router();
 
-productsController.get("/", (_, res) => {
-  const products = productsService.getAllProducts();
+productsController.get("/", async (_, res, next) => {
+  try {
+    const products = await productsService.getAllProducts();
 
-  res.status(STATUS_CODES.OK).send(generateResponse(products));
+    res.status(STATUS_CODES.OK).json(generateResponse(products));
+  } catch (e) {
+    next(e);
+  }
 });
 
-productsController.get("/:productId", (req, res) => {
-  const productId = req.params.productId;
+productsController.get("/:productId", async (req, res, next) => {
+  try {
+    const productId = req.params.productId;
 
-  const product = productsService.getProductById(productId);
+    const product = await productsService.getProductById(productId);
 
-  if (!product) {
-    throw new APIError("No product with such id", STATUS_CODES.NOT_FOUND);
+    if (!product) {
+      throw new APIError("No product with such id", STATUS_CODES.NOT_FOUND);
+    }
+
+    res.status(STATUS_CODES.OK).json(generateResponse(product));
+  } catch (e) {
+    next(e);
   }
-
-  res.status(STATUS_CODES.OK).send(generateResponse(product));
 });
 
 export default productsController;

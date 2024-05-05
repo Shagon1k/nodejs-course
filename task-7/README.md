@@ -29,23 +29,23 @@ In this task you will need to modify the application you created in Express and 
 
 ## Application Pre-setup
 
-1. Create `.env` file with variables:
-   - `DB_ROOT_USERNAME`: MongoDB root username;
-   - `DB_ROOT_PASSWORD` MongoDB root password;
-2. Create `.env.dev` file with variables:
-   - `DB_HOST`: MongoDB host _(e.g. localhost)_;
-   - `DB_PORT`: MongoDB port _(e.g. 27017)_;
+1. Create `.env.dev` file with variables:
+   - `MONGO_INITDB_ROOT_USERNAME`: MongoDB root username _(used for Docker configuration)_;
+   - `MONGO_INITDB_ROOT_PASSWORD` MongoDB root password _(used for Docker configuration)_;
+   - `DB_HOST`: MongoDB host _("localhost" with default Docker config)_;
+   - `DB_PORT`: MongoDB port _(e.g. 27017, keep aligning with Docker config)_;
    - `DB_USER_USERNAME`: MongoDB user username;
    - `DB_USER_PASSWORD`: MongoDB user password;
    - `DB_NAME`: name of working Database;
-3. To setup your MongoDB use `npm run db:start:local`.
-   - Don't forget to setup `DB_ROOT_USERNAME`, `DB_ROOT_PASSWORD` environment variables in `.env`.
-4. Application works with `User`'s credentials to manipulate with `{DB_NAME}` MongoDB database. So:
+2. To setup your MongoDB use `npm run db:start:local`.
+   - Don't forget to setup `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD` environment variables in `.env.dev`.
+3. Application works with `User`'s credentials to manipulate with `{DB_NAME}` MongoDB database. So:
    - Don't forget to setup `DB_USER_USERNAME`, `DB_USER_PASSWORD`, `DB_NAME` environment variables in `.env.dev`;
    - After running MongoDB container (see 2), create your `User` running:
-     - In terminal: `podman exec -it shop-db mongosh -u {DB_ROOT_USERNAME} -p {DB_ROOT_PASSWORD}`;
+     - In terminal: `podman exec -it shop-db mongosh -u {MONGO_INITDB_ROOT_USERNAME} -p {MONGO_INITDB_ROOT_PASSWORD}`;
      - In opened MongoDB shell:
      ```
      use {DB_NAME}
      db.createUser({user: "{DB_USER_USERNAME}", pwd: "{DB_USER_PASSWORD}", roles: [{ role: "readWrite", db: "{DB_NAME}"}]})
      ```
+4. Then you are ready to go.

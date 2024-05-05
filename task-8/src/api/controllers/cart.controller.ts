@@ -8,64 +8,86 @@ import { cartService } from "../services";
 
 const cartController = Router();
 
-cartController.get("/", (req, res) => {
-  const userId = req.headers[AUTH_TOKEN_HEADER] as string;
-  const { cart, total } = cartService.getCartByUserId(userId);
+cartController.get("/", async (req, res, next) => {
+  try {
+    const userId = req.headers[AUTH_TOKEN_HEADER] as string;
+    const { cart, total } = await cartService.getCartByUserId(userId);
 
-  res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
+    res.status(STATUS_CODES.OK).json(generateResponse({ cart, total }));
+  } catch (e) {
+    next(e);
+  }
 });
 
-cartController.put("/", (req, res) => {
-  const reqUserId = req.headers[AUTH_TOKEN_HEADER] as string;
-  const requestBody = req.body;
-  const validatedRequest = updateCartSchema.validate({
-    userId: reqUserId,
-    ...requestBody,
-  });
+cartController.put("/", async (req, res, next) => {
+  try {
+    const reqUserId = req.headers[AUTH_TOKEN_HEADER] as string;
+    const requestBody = req.body;
+    const validatedRequest = updateCartSchema.validate({
+      userId: reqUserId,
+      ...requestBody,
+    });
 
-  // Request is not valid
-  if (validatedRequest.error) {
-    throw new APIError(
-      validatedRequest.error.message,
-      STATUS_CODES.BAD_REQUEST
+    // Request is not valid
+    if (validatedRequest.error) {
+      throw new APIError(
+        validatedRequest.error.message,
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
+
+    const { userId, productId, count } = validatedRequest.value;
+    const updateCartResult = await cartService.updateCart(
+      userId,
+      productId,
+      count
     );
+
+    // No product with such ID
+    if (updateCartResult === cartService.CART_ERRORS.NO_PRODUCT) {
+      throw new APIError("Products are not valid", STATUS_CODES.BAD_REQUEST);
+    }
+
+    // No cart exist for user
+    if (updateCartResult === cartService.CART_ERRORS.NO_CART) {
+      throw new APIError("Cart was not found", STATUS_CODES.NOT_FOUND);
+    }
+
+    const { cart, total } = updateCartResult;
+    res.status(STATUS_CODES.OK).json(generateResponse({ cart, total }));
+  } catch (e) {
+    next(e);
   }
-
-  const { userId, productId, count } = validatedRequest.value;
-  const updateCartResult = cartService.updateCart(userId, productId, count);
-
-  // No product with such ID
-  if (updateCartResult === cartService.CART_ERRORS.NO_PRODUCT) {
-    throw new APIError("Products are not valid", STATUS_CODES.BAD_REQUEST);
-  }
-
-  // No cart exist for user
-  if (updateCartResult === cartService.CART_ERRORS.NO_CART) {
-    throw new APIError("Cart was not found", STATUS_CODES.NOT_FOUND);
-  }
-
-  const { cart, total } = updateCartResult;
-  res.status(STATUS_CODES.OK).send(generateResponse({ cart, total }));
 });
 
-cartController.delete("/", (req, res) => {
-  const userId = req.headers[AUTH_TOKEN_HEADER] as string;
+cartController.delete("/", async (req, res, next) => {
+  try {
+    const userId = req.headers[AUTH_TOKEN_HEADER] as string;
 
-  cartService.emptyCartByUserId(userId);
+    await cartService.emptyCartByUserId(userId);
 
-  res.status(STATUS_CODES.OK).send(generateResponse({ success: true }));
+    res.status(STATUS_CODES.OK).json(generateResponse({ success: true }));
+  } catch (e) {
+    next(e);
+  }
 });
 
-cartController.post("/checkout", (req, res) => {
-  const userId = req.headers[AUTH_TOKEN_HEADER] as string;
+cartController.post("/checkout", async (req, res, next) => {
+  try {
+    const userId = req.headers[AUTH_TOKEN_HEADER] as string;
 
-  const checkoutResult = cartService.checkout(userId);
+    const checkoutResult = await cartService.checkout(userId);
 
-  if (checkoutResult === cartService.CART_ERRORS.CART_IS_EMPTY) {
-    throw new APIError("Cart is empty", STATUS_CODES.BAD_REQUEST);
+    if (checkoutResult === cartService.CART_ERRORS.CART_IS_EMPTY) {
+      throw new APIError("Cart is empty", STATUS_CODES.BAD_REQUEST);
+    }
+
+    res
+      .status(STATUS_CODES.OK)
+      .json(generateResponse({ order: checkoutResult }));
+  } catch (e) {
+    next(e);
   }
-
-  res.status(STATUS_CODES.OK).send(generateResponse({ order: checkoutResult }));
 });
 
 export default cartController;

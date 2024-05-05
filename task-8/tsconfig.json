@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2020",
     "lib": ["es6"],
     "module": "commonjs",
+    "moduleResolution": "node",
     "rootDir": "src",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -11,6 +12,9 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

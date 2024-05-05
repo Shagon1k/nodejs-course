@@ -1,8 +1,13 @@
+import { type Loaded as ILoaded } from "@mikro-orm/core";
 import {
   cartRepository,
   productRepository,
   orderRepository,
 } from "../repositories";
+import {
+  type ICartItem,
+  type Cart,
+} from "../repositories/entities/cart.entity";
 import omitFields from "../helpers/omitFields";
 
 export const enum CART_ERRORS {
@@ -11,64 +16,66 @@ export const enum CART_ERRORS {
   CART_IS_EMPTY,
 }
 
-const calculateTotal = (items: cartRepository.ICartItemEntity[]) =>
+const calculateTotal = (items: ICartItem[]) =>
   items.reduce((acc, { product: { price }, count }) => acc + price * count, 0);
 
-export const getCartByUserId = (userId: string) => {
-  let cart = cartRepository.findCartByUserId(userId);
+export const getCartByUserId = async (userId: string) => {
+  let cart = await cartRepository.findCartByUserId(userId);
 
   // Cart does not exist -> create one
   if (!cart) {
-    cartRepository.createCart(userId);
-    cart = cartRepository.findCartByUserId(userId)!;
+    await cartRepository.createCart(userId);
+    cart = (await cartRepository.findCartByUserId(userId))!;
   }
 
   const total = calculateTotal(cart.items);
 
-  return { cart: omitFields(cart, ["isDeleted"]), total };
+  return { cart: omitFields(cart, ["isDeleted", "order"]), total };
 };
 
-export const updateCart = (
+export const updateCart = async (
   userId: string,
   productId: string,
   count: number
 ) => {
-  const product = productRepository.findProductById(productId);
+  const product = await productRepository.findProductById(productId);
   // No such product
   if (!product) {
     return CART_ERRORS.NO_PRODUCT;
   }
 
-  const cart = cartRepository.findCartByUserId(userId);
+  const cart = await cartRepository.findCartByUserId(userId);
   // No cart exist
   if (!cart) {
     return CART_ERRORS.NO_CART;
   }
 
   // Add item to cart or update it's count
-  cartRepository.updateCartItem(cart.id, product, count);
+  await cartRepository.updateCartItem(cart.id, product, count);
 
-  const updatedCart = cartRepository.findCartByUserId(userId)!;
+  const updatedCart = (await cartRepository.findCartByUserId(userId))!;
   const total = calculateTotal(updatedCart.items);
   // Return updated cart
-  return { cart: omitFields(updatedCart, ["isDeleted"]), total };
+  return { cart: omitFields(updatedCart, ["isDeleted", "order"]), total };
 };
 
-export const emptyCartByUserId = (userId: string) => {
-  cartRepository.emptyCartByUserId(userId);
+export const emptyCartByUserId = async (userId: string) => {
+  await cartRepository.emptyCartByUserId(userId);
 };
 
-export const checkout = (userId: string) => {
-  const cart = cartRepository.findCartByUserId(userId);
+export const checkout = async (userId: string) => {
+  const cart = (await cartRepository.findCartByUserId(userId, {
+    isSerialized: false,
+  })) as ILoaded<Cart, never, "*", never>;
 
   if (!cart || cart.items.length === 0) {
     return CART_ERRORS.CART_IS_EMPTY;
   }
 
-  orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
-  cartRepository.deleteCartById(cart.id);
+  await orderRepository.createOrder(userId, cart, calculateTotal(cart.items));
+  await cartRepository.deleteCartById(cart.id);
 
-  const createdOrder = orderRepository.findOrderByCartId(cart.id)!;
+  const createdOrder = await orderRepository.findOrderByCartId(cart.id)!;
 
   return createdOrder;
 };

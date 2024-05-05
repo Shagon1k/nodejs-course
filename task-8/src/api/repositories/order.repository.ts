@@ -1,31 +1,7 @@
-import { randomUUID } from "crypto";
-import { ICartEntity, ICartItemEntity } from "./cart.repository";
-
-const enum ORDER_STATUS {
-  CREATED = "created",
-  COMPLETED = "completed",
-}
-
-export interface IOrderEntity {
-  id: string;
-  userId: string;
-  cartId: string;
-  items: ICartItemEntity[];
-  payment: {
-    type: string;
-    address?: any;
-    creditCard?: any;
-  };
-  delivery: {
-    type: string;
-    address: any;
-  };
-  comments: string;
-  status: ORDER_STATUS;
-  total: number;
-}
-
-const orders_db: IOrderEntity[] = [];
+import { Reference, wrap } from "@mikro-orm/core";
+import { entityManager } from "../../server";
+import { Order, ORDER_STATUS } from "./entities/order.entity";
+import { type Cart as ICart } from "./entities/cart.entity";
 
 const mockedPayment = {
   type: "paypal",
@@ -38,28 +14,32 @@ const mockedDelivery = {
   address: "London",
 };
 
-export const findOrderByCartId = (findCartId: string) => {
-  const order = orders_db.find(({ cartId }) => cartId === findCartId) || null;
+export const findOrderByCartId = async (findCartId: string) => {
+  const orderRepository = entityManager.getRepository(Order);
+  const order = await orderRepository.findOne({
+    cart: { id: findCartId },
+  });
 
-  return structuredClone(order);
+  return order ? wrap(order).toObject() : order;
 };
 
-export const createOrder = (
+export const createOrder = async (
   userId: string,
-  cart: ICartEntity,
+  cart: ICart,
   total: number
 ) => {
-  const newOrder: IOrderEntity = {
-    id: randomUUID(),
-    userId,
-    cartId: cart.id,
+  const orderRepository = entityManager.getRepository(Order);
+
+  orderRepository.create({
+    user: Reference.createFromPK(Order, userId),
+    cart,
     items: cart.items,
     payment: { ...mockedPayment },
     delivery: { ...mockedDelivery },
-    comments: "",
+    comments: "Dummy comment",
     status: ORDER_STATUS.CREATED,
     total,
-  };
+  });
 
-  orders_db.push(newOrder);
+  await entityManager.flush();
 };
