@@ -8,12 +8,9 @@ import {
 } from "@mikro-orm/core";
 import { type PostgreSqlDriver as IPostgreSqlDriver } from "@mikro-orm/postgresql";
 import apiRouter from "./api";
+import { APP_ENV } from "./config/app.config";
 import ormConfig from "./config/orm.config";
 
-const PORT = 8000;
-
-// Note: Only "dev" environment supported. In real project several configs could be created for different environments ("prod", "dev", "test", etc.)
-const APP_ENV = "dev";
 dotenv.config({ path: path.resolve(__dirname, `../../.env.${APP_ENV}`) });
 
 export let entityManager: IEntityManager = {} as IEntityManager;
@@ -28,7 +25,7 @@ export const runServer = async () => {
   app.use((req, res, next) => RequestContext.create(orm.em, next));
   app.use("/api", apiRouter);
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  app.listen(process.env.APP_PORT, () => {
+    console.log(`Server is running on port ${process.env.APP_PORT}`);
   });
 };
