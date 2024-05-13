@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import {
   MikroORM,
   RequestContext,
@@ -28,7 +29,13 @@ export const runServer = async () => {
   entityManager = orm.em;
 
   app.use(express.json());
+  app.use(
+    morgan(":method :url :status - :response-time ms", {
+      stream: { write: (message) => logger.info(message.trim()) },
+    })
+  );
   // Note: Create new Identity Map for each request to avoid having one context for whole application
+  // Warn: This middleware should be the last one just before request handlers and before any of custom middleware that is using the ORM.
   app.use((req, res, next) => RequestContext.create(orm.em, next));
   app.use("/api", apiRouter);
   app.get("/health", async (_, res, next) => {
@@ -49,7 +56,7 @@ export const runServer = async () => {
         .status(STATUS_CODES.OK)
         .json(generateResponse({ message: "Healthy." }));
     } catch (error) {
-      logger.error("Internal error performing healthcheck.", error);
+      logger.error("Internal error performing healthcheck.", { data: error });
 
       return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
@@ -61,6 +68,6 @@ export const runServer = async () => {
 
   logger.debug("Initialization complete.");
   app.listen(process.env.APP_PORT, () => {
-    logger.info(`Server is running on port ${process.env.APP_PORT}`);
+    logger.info(`Server is running on port ${process.env.APP_PORT}.`);
   });
 };

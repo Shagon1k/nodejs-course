@@ -20,7 +20,7 @@ const errorHandlerMiddleware = (
       .status(error.statusCode)
       .send(generateResponse(undefined, error.message));
   } else {
-    logger.error("Internal error.", error);
+    logger.error("Internal error.", { data: error });
 
     res
       .status(STATUS_CODES.INTERNAL_SERVER_ERROR)

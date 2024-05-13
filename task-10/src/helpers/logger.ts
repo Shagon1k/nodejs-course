@@ -5,12 +5,14 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({ format: "ddd, DD MMM YYYY HH:mm:ss" }),
     winston.format.printf((info) => {
-      const { timestamp, level, message, ...rest } = info;
-      return `[${timestamp}] ${level.toUpperCase()} ${message} ${JSON.stringify(
-        rest,
-        null,
-        2
-      )}`;
+      const { timestamp, level, message, data } = info;
+      let printResult = `[${timestamp}] ${level.toUpperCase()} ${message}`;
+
+      if (data) {
+        printResult += ` ${JSON.stringify(data, null, 2)}`;
+      }
+
+      return printResult;
     })
   ),
   transports: [new winston.transports.Console()],
