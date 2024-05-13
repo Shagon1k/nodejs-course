@@ -6,6 +6,7 @@ import {
 
 import APIError from "../helpers/apiError";
 import generateResponse from "../helpers/generateResponse";
+import logger from "../../helpers/logger";
 import { STATUS_CODES } from "../../constants";
 
 const errorHandlerMiddleware = (
@@ -19,7 +20,7 @@ const errorHandlerMiddleware = (
       .status(error.statusCode)
       .send(generateResponse(undefined, error.message));
   } else {
-    console.error("Internal error:", error);
+    logger.error("Internal error.", error);
 
     res
       .status(STATUS_CODES.INTERNAL_SERVER_ERROR)

@@ -8,17 +8,22 @@ import {
 } from "@mikro-orm/core";
 import { type PostgreSqlDriver as IPostgreSqlDriver } from "@mikro-orm/postgresql";
 import apiRouter from "./api";
+import logger from "./helpers/logger";
 import generateResponse from "./api/helpers/generateResponse";
 import { STATUS_CODES } from "./constants";
-import { APP_ENV } from "./config/app.config";
+import { APP_ENV_FILE_POSTFIX } from "./config/app.config";
 import ormConfig from "./config/orm.config";
 
-dotenv.config({ path: path.resolve(__dirname, `../../.env.${APP_ENV}`) });
+dotenv.config({
+  path: path.resolve(__dirname, `../../.env.${APP_ENV_FILE_POSTFIX}`),
+});
 
 export let entityManager: IEntityManager = {} as IEntityManager;
 
 export const runServer = async () => {
+  logger.debug("Initializing server.");
   const app = express();
+  logger.debug("Initializing database.");
   const orm = await MikroORM.init<IPostgreSqlDriver>(ormConfig);
   entityManager = orm.em;
 
@@ -44,7 +49,7 @@ export const runServer = async () => {
         .status(STATUS_CODES.OK)
         .json(generateResponse({ message: "Healthy." }));
     } catch (error) {
-      console.error("Internal error performing healthcheck:", error);
+      logger.error("Internal error performing healthcheck.", error);
 
       return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
@@ -54,7 +59,8 @@ export const runServer = async () => {
     next();
   });
 
+  logger.debug("Initialization complete.");
   app.listen(process.env.APP_PORT, () => {
-    console.log(`Server is running on port ${process.env.APP_PORT}`);
+    logger.info(`Server is running on port ${process.env.APP_PORT}`);
   });
 };

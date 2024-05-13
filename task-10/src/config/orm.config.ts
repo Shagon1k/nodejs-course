@@ -4,11 +4,11 @@ import { type Options as IOptions } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Migrator } from "@mikro-orm/migrations";
 import { SeedManager } from "@mikro-orm/seeder";
+import { APP_ENV_FILE_POSTFIX } from "./app.config";
 
-// Note: Only "dev" environment supported. In real project several configs could be created for different environments ("prod", "dev", "test", etc.)
-const APP_ENV = "dev";
-
-dotenv.config({ path: path.resolve(__dirname, `../../.env.${APP_ENV}`) });
+dotenv.config({
+  path: path.resolve(__dirname, `../../.env.${APP_ENV_FILE_POSTFIX}`),
+});
 
 const options: IOptions<PostgreSqlDriver> = {
   baseDir: process.cwd(),
