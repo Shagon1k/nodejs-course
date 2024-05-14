@@ -10,6 +10,7 @@ import {
 import { type PostgreSqlDriver as IPostgreSqlDriver } from "@mikro-orm/postgresql";
 import apiRouter from "./api";
 import logger from "./helpers/logger";
+import withGracefulShutdown from "./helpers/with-graceful-shutdown";
 import generateResponse from "./api/helpers/generateResponse";
 import { STATUS_CODES } from "./constants";
 import { APP_ENV_FILE_POSTFIX } from "./config/app.config";
@@ -66,8 +67,10 @@ export const runServer = async () => {
     next();
   });
 
-  logger.debug("Initialization complete.");
-  app.listen(process.env.APP_PORT, () => {
+  logger.debug("Initialization complete. Starting the server.");
+
+  const server = app.listen(process.env.APP_PORT, () => {
     logger.info(`Server is running on port ${process.env.APP_PORT}.`);
   });
+  withGracefulShutdown(server);
 };
