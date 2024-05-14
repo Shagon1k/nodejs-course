@@ -4,7 +4,10 @@
     "description": "",
     "scripts": {
         "build": "tsc",
+        "build:dev": "cross-env NODE_ENV=development npm run build",
+        "build:prod": "cross-env NODE_ENV=production npm run build",
         "start": "pm2 start build/index.js --name task-10-app",
+        "start:prod": "cross-env NODE_ENV=production npm run start",
         "stop": "pm2 stop task-10-app",
         "start:dev": "ts-node src/index.ts",
         "db:start:local": "podman compose up -d",
@@ -32,6 +35,7 @@
         "@types/jsonwebtoken": "^9.0.6",
         "@types/morgan": "^1.9.9",
         "@types/node": "^20.11.24",
+        "cross-env": "^7.0.3",
         "pm2": "^5.3.1",
         "ts-node": "^10.9.2",
         "typescript": "^5.3.3"
