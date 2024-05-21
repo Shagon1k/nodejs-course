@@ -7,11 +7,12 @@
         "build:dev": "cross-env NODE_ENV=development npm run build",
         "build:prod": "cross-env NODE_ENV=production npm run build",
         "start": "pm2 start build/index.js --name task-10-app",
-        "start:prod": "cross-env NODE_ENV=production npm run start",
         "stop": "pm2 stop task-10-app",
-        "start:dev": "ts-node src/index.ts",
-        "db:start:local": "podman compose up -d",
-        "db:stop:local": "podman stop shop-db_sql"
+        "start:dev": "cross-env NODE_ENV=development ts-node src/index.ts",
+        "db:start:dev": "podman compose up -d db",
+        "db:stop:dev": "podman stop shop_db",
+        "app:start:docker": "podman compose up -d app",
+        "app:stop:docker": "podman stop shop_db-migrate shop_db shop_app"
     },
     "author": "Aliaksei Hurynovich",
     "license": "ISC",

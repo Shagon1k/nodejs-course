@@ -1,11 +1,46 @@
 version: "3"
 services:
-  postgres-db:
-    container_name: "shop-db_sql"
+  app:
+    container_name: shop_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file: .env.prod
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - db-migrate
+    networks:
+      - app_network
+
+  db:
+    container_name: shop_db
     image: postgres
     restart: always
-    env_file: .env.dev
+    env_file: .env.prod
     ports:
       - 5435:5432
-    expose:
-      - "5435"
+    networks:
+      - app_network
+
+  db-migrate:
+    container_name: shop_db-migrate
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: db-migrate
+    command:
+      [
+        "sh",
+        "-c",
+        "npx cross-env NODE_ENV=production npx mikro-orm migration:fresh --seed",
+      ]
+    networks:
+      - app_network
+    depends_on:
+      - db
+
+networks:
+  app_network:

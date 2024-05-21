@@ -28,24 +28,38 @@ Congratulations, we are almost on the finish line! In this task you will need to
 
 1. Create `.env.dev` file with variables:
    - `APP_PORT`: Application port to use;
-   - `POSTGRES_DB`: PostgreSQL database name _(keep naming, used for Docker configuration)_;
-   - `POSTGRES_USER`: PostgreSQL root username _(keep naming, used for Docker configuration)_;
-   - `POSTGRES_PASSWORD`: PostgreSQL root password _(keep naming, used for Docker configuration)_;
-   - `POSTGRES_HOST`: PostgreSQL host name _("localhost" with default Docker config)_;
-   - `POSTGRES_PORT`: PostgreSQL database port _(e.g. "5435", keep aligning with Docker config)_;
+   - `POSTGRES_DB`: PostgreSQL database name _(keep naming, used for DB Docker configuration)_;
+   - `POSTGRES_USER`: PostgreSQL root username _(keep naming, used for DB Docker configuration)_;
+   - `POSTGRES_PASSWORD`: PostgreSQL root password _(keep naming, used for DB Docker configuration)_;
+   - `POSTGRES_HOST`: PostgreSQL host name _("localhost" with default DB Docker config)_;
+   - `POSTGRES_PORT`: PostgreSQL database port _(e.g. "5435", keep aligning with DB Docker config)_;
    - `AUTH_TOKEN_KEY`: Secret key used for JWT token generation;
-2. To setup your PostgreSQL use `npm run db:start:local`.
+2. To setup your PostgreSQL use `npm run db:start:dev`.
 3. Application includes **migrations** _(for DDLs)_ and **seeds** _(for DMLs)_:
    - (optional) If migrations do not exist/deleted accidentally - use: `npx mikro-orm migration:create`;
    - To create tables in database use: `npx mikro-orm migration:up`;
    - To fill tables with predefined testing data use: `npx mikro-orm seeder:run`;
    - Alternatively instead of 2 previous points `npx mikro-orm migration:fresh --seed` could be used, which will drop database, re-create migration and run seeds.
 4. Then you are ready to go.
-5. (optional) Application is also adapted to work with "production" config. You can handle it by using `.env.prod` configuration file.
+5. (optional) Application is also adapted to work with `production` config. You can handle it by using `.env.prod` configuration file.
+
+_**NB**: For `production` build full application containerization with Docker is used. While used in scope of containers network, PostgreSQL requires `5432` port be in use, also database service name should be used as a host. Thus, for such `production` build env config should have specific port and host: `5432` and `db` accordingly._
+
+## Application start
+
+### Development
+
+1. [ Application Pre-setup ](#application-pre-setup) 1-4;
+2. Run `npm run start:dev`;
+3. (alternative) Build the app with `npm run build:dev` OR `npm run build:prod` (prod-like) and run using `npm start`.
+
+### Production
+
+1. Run `app:start:docker`.
 
 # Additional tasks (not evaluated)
 
-1. Use Docker compose for all the local infrastructure (app and DB)
-2. Add few [husky](https://www.npmjs.com/package/husky) hooks to your app to: check the [commit](https://www.npmjs.com/package/@commitlint/config-conventional) message, run linting script on commit, run unit tests on push; setup any static code analyser and perform quality scan over your app; check whether you have secure npm dependencies
+1. Use Docker compose for all the local infrastructure (app and DB) -- _completed_
+2. Add few [husky](https://www.npmjs.com/package/husky) hooks to your app to: check the [commit](https://www.npmjs.com/package/@commitlint/config-conventional) message, run linting script on commit, run unit tests on push; setup any static code analyser and perform quality scan over your app; check whether you have secure npm dependencies -- _completed in scope of pet projects_
 3. Set up a [local](https://docs.docker.com/registry/) or any free container registry ([DockerHub](https://hub.docker.com/), [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html), [Azure Container Registry](https://azure.microsoft.com/en-us/products/container-registry/), or [Google Artifact Registry](https://cloud.google.com/blog/products/application-development/understanding-artifact-registry-vs-container-registry)) and publish your image there; pull image from registry and run it; publish few different versions of your app (with proper tags) to the registry
-4. Create a repository in internal GitBud.epam.com; push the code of your Node.js app there; based on the sample template create [.gitlab-ci.yml](https://docs.gitlab.com/ee/ci/index.html#the-gitlab-ciyml-file) template to run a simple CI/CD which will contain all the jobs from the mandatory part (`eslit`, `tests`, `npm audit`, `build stage` (dockerise the app), and (optionally) `static code analysis`) that will be executed by shared worker; investigate [GitLab CI/CD capabilities](https://docs.gitlab.com/ee/ci/), and push the template to start and test the pipeline (note, that your pipeline can be executed with some delay due to a limited capacity of shared workers); providing you created a cloud container registry (AWS ECR, DockerHub, etc.), configure credentials and push the built docker image to the container registry from the pipeline.
+4. Create a repository in internal GitBud.epam.com; push the code of your Node.js app there; based on the sample template create [.gitlab-ci.yml](https://docs.gitlab.com/ee/ci/index.html#the-gitlab-ciyml-file) template to run a simple CI/CD which will contain all the jobs from the mandatory part (`eslit`, `tests`, `npm audit`, `build stage` (dockerise the app), and (optionally) `static code analysis`) that will be executed by shared worker; investigate [GitLab CI/CD capabilities](https://docs.gitlab.com/ee/ci/), and push the template to start and test the pipeline (note, that your pipeline can be executed with some delay due to a limited capacity of shared workers); providing you created a cloud container registry (AWS ECR, DockerHub, etc.), configure credentials and push the built docker image to the container registry from the pipeline. -- _completed in scope of pet projects_
